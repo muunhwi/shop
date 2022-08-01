@@ -22,20 +22,11 @@ public class MemberController {
     public String getLoginPage() {
         return "/member/login";
     }
+
     @PostMapping("/member/login")
     public String postLoginPage(Member member) {
         log.info("post call");
-        return "/shop/main";
+        return "/shop/index";
     }
-    @GetMapping("/shop/main")
-    public String dakjqwdwo() {
-        return "shop/main";
-    }
-    @GetMapping("/admin/setting")
-    public String admin() {
-        return "/admin/setting";
-    }
-
-
 
 }

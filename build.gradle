@@ -2,6 +2,8 @@ plugins {
 	id 'org.springframework.boot' version '2.7.2'
 	id 'io.spring.dependency-management' version '1.0.12.RELEASE'
 	id 'java'
+	id "com.github.node-gradle.node" version "3.4.0"
+
 }
 
 group = 'com.pofol'
@@ -34,6 +36,23 @@ dependencies {
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.3.3'
 
 }
+
+/**
+ * npm install start
+ */
+node {
+	version = '16.14.1'
+	download = true
+	nodeModulesDir = file("${projectDir}/src/main/resources/static")
+}
+
+task copyFrontLib(type: Copy) {
+	from "${projectDir}/src/main/resources/static"
+	into "${projectDir}/build/resources/main/static/."
+}
+
+copyFrontLib.dependsOn npmInstall
+compileJava.dependsOn copyFrontLib
 
 tasks.named('test') {
 	useJUnitPlatform()
