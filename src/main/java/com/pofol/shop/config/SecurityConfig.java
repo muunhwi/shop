@@ -11,6 +11,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -23,6 +24,7 @@ public class SecurityConfig {
 
     private final AuthSuccessHandler successHandler;
     private final AuthFailureHandler failureHandler;
+
 
     @Bean
     public BCryptPasswordEncoder encryptPassword() {
@@ -41,22 +43,23 @@ public class SecurityConfig {
     public SecurityFilterChain webConfig(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .mvcMatchers("/member/**", "/join/**")
+                .mvcMatchers("/member/login", "/node_modules/**" , "/img/**", "/" ,"/layout/**",
+                             "/css/**", "/member/join")
                 .permitAll()
                 .mvcMatchers("/admin/**").hasRole("ADMIN")
-                .mvcMatchers("/shop/**").hasRole("USER")
+                .mvcMatchers("/member/**").hasRole("USER")
                 .anyRequest()
                 .authenticated()
                 .and()
                 .formLogin()
+                .usernameParameter("email")
                 .loginPage("/member/login")
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
                 .and()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("/member/login")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()

@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bootstrap": "^5.2.0"
+    "bootstrap": "^5.2.0",
+    "bootstrap-icons": "^1.9.1",
+    "cropperjs": "^1.5.12",
+    "jquery": "^3.6.0",
+    "parsleyjs": "^2.9.2"
   }
 }

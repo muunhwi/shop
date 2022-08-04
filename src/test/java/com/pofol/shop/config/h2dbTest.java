@@ -21,10 +21,10 @@ h2dbTest {
     void h2dbTest() {
         Member customer = Member.builder()
                 .email("asd@bse.com")
-                .name("123")
+                .nickname("123")
                 .password("123")
                 .phoneNumber("010-1111-1234")
-                .address(new Address("12345", "대구 달서구 상인동", "1421-8"))
+                .address(new Address("12345", "대구 달서구 상인동", "1421-8",""))
                 .build();
         Long id = customerService.save(customer);
         Assertions.assertEquals(id, 1L);

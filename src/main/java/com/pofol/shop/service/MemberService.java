@@ -27,51 +27,17 @@ public class MemberService implements UserDetailsService {
         return saveCustomer.getId();
     }
 
-    public Member findById(Long id) {
-        Optional<Member> findCustomer = MemberRepository.findById(id);
-        return findCustomer.orElseThrow(() -> new EntityNotFoundException("엔티티가 존재하지 않습니다"));
+    public Optional<Member> findById(Long id) {
+        return MemberRepository.findById(id);
     }
 
-    public Member findByEmail(String email) {
-        Optional<Member> findCustomer = MemberRepository.findByEmail(email);
-        return findCustomer.orElseThrow(() -> new EntityNotFoundException("엔티티가 존재하지 않습니다"));
+    public Optional<Member> findByEmail(String email) {
+        return MemberRepository.findByEmail(email);
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
         log.info("email = {}", email);
-
-        if(email.equals("user")) {
-            Member user = Member.builder()
-                    .id(1L)
-                    .accountNonLocked(true)
-                    .username("user")
-                    .enabled(true)
-                    .email("user")
-                    .password(encoder.encode("123"))
-                    .role("USER")
-                    .build();
-            return user;
-        }
-
-        if(email.equals("admin")) {
-            Member admin = Member.builder()
-                    .id(1L)
-                    .accountNonLocked(true)
-                    .username("user")
-                    .enabled(true)
-                    .email("user")
-                    .password(encoder.encode("123"))
-                    .role("ROLE_ADMIN")
-                    .build();
-            return admin;
-        }
-
-
-
-        Optional<Member> byEmail = MemberRepository.findByEmail(email);
         return MemberRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다."));
     }
 }

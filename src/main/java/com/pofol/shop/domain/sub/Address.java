@@ -12,8 +12,9 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor
 public class Address {
 
-   private String addressId;
+   private String zoneCode;
    private String baseAddress;
    private String detailAddress;
+   private String extraAddress;
 
 }

@@ -1,22 +1,64 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
-<head>
-    <title>Please Log In</title>
-</head>
-<body>
-<h1>Please Log In</h1>
-<div th:if="${param.error}">
-    Invalid username and password.</div>
-<div th:if="${param.logout}">
-    You have been logged out.</div>
-<form th:action="@{/member/login}" method="post">
-    <div>
-        <input type="text" name="username" placeholder="Username"/>
-    </div>
-    <div>
-        <input type="password" name="password" placeholder="Password"/>
-    </div>
-    <input type="submit" value="Log in" />
-</form>
-</body>
+<html
+  xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{/layout/base :: layout(~{::title}, ~{::section}, ~{::script})}"
+>
+  <head>
+    <title>LOGIN</title>
+  </head>
+  <body>
+    <section>
+      <h1>Please Log In</h1>
+      <form
+        id="login"
+        data-parsley-validate
+        data-parsley-ui-enabled="true"
+        name="login"
+        th:action="@{/member/login}"
+        method="POST"
+      >
+        <label for="email">Email *</label>
+        <input
+          type="email"
+          name="email"
+          required=""
+          data-parsley-group="block"
+          data-parsley-errors-container="#error"
+          data-parsley-errors-messages-disabled
+        />
+        <label for="password">Password *</label>
+        <input
+          type="password"
+          name="password"
+          required=""
+          pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,16}$"
+          data-parsley-errors-container="#error"
+          data-parsley-group="block"
+          data-parsley-errors-messages-disabled
+        />
+        <input type="submit" value="Login" />
+      </form>
+      <div id="error" style="color: red"></div>
+    </section>
+  </body>
+  <script>
+    $(function () {
+      $("#login")
+        .parsley()
+        .on("form:validate", function (formInstant) {
+          var ok = formInstant.isValid({ group: "block" });
+          for (let field in formInstant.fieldsMappedById) {
+            const value = formInstant.fieldsMappedById[field];
+            for (let sub in value) {
+              const subV = value[sub];
+              console.log(subV);
+            }
+          }
+          $("#error").html(
+            ok ? "" : "이메일 또는 비밀번호가 올바르지 않습니다."
+          );
+          if (!ok) return (formInstant.validationResult = false);
+        });
+    });
+  </script>
 </html>
