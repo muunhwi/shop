@@ -1,151 +1,229 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, contents, script)">
-<head>
-    <meta charset="UTF-8">
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:fragment="layout(title, contents, script, style)"
+>
   <head>
     <title th:replace="${title}">메인 타이틀</title>
-    <link rel="stylesheet" th:href="@{/node_modules/bootstrap/dist/css/bootstrap.min.css}" />
+    <link
+      rel="stylesheet"
+      th:href="@{/node_modules/bootstrap/dist/css/bootstrap.min.css}"
+    />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
-<body>
-
-<div class="container-xl">
-    <!-- NAVIGATION BAR -->
-    <nav
-            class="navbar navbar-expand-lg navbar-light bg-light shadow-sm border"
-    >
+  <style th:replace="${style}"></style>
+  <body>
+    <div class="container-xl">
+      <!-- NAVIGATION BAR -->
+      <nav
+        class="navbar navbar-expand-lg navbar-light bg-light shadow-sm border"
+      >
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="/img/1841331_1_500.jpg" alt="" width="30" height="24" />
-            </a>
-            <a class="navbar-brand" href="#">SHOP</a>
-            <button
-                    class="navbar-toggler"
+          <a class="navbar-brand" href="#">
+            <img src="/img/1841331_1_500.jpg" alt="" width="30" height="24" />
+          </a>
+          <a class="navbar-brand" href="#">SHOP</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div
+            class="collapse navbar-collapse justify-content-end"
+            id="navbarNav"
+          >
+            <ul class="nav">
+              <li class="nav-item">
+                <div class="btn-group">
+                  <button
                     type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
+                    class="btn btn-danger dropdown-toggle"
+                    data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    aria-label="Toggle navigation"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div
-                    class="collapse navbar-collapse justify-content-end"
-                    id="navbarNav"
-            >
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#"
-                        >Active</a
-                        >
+                  >
+                    Action
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=아우터}"
+                        >아우터</a
+                      >
                     </li>
-                    <li class="nav-item"></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=셔츠}"
+                        >셔츠</a
+                      >
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled">Disabled</a>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=팬츠}"
+                        >팬츠</a
+                      >
                     </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div th:replace="${contents}">
-
-    </div>
-
-    <!-- FOOTER -->
-    <div class="container">
-        <footer class="row row-cols-5 py-5 my-5 border-top">
-            <div class="col">
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=스포츠}"
+                        >스포츠</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=신발}"
+                        >신발</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=가방}"
+                        >가방</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=악세서리}"
+                        >악세서리</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
                 <a
-                        href="/"
-                        class="d-flex align-items-center mb-3 link-dark text-decoration-none"
+                  class="nav-link"
+                  th:if="${auth == null}"
+                  th:href="@{/member/login}"
+                  th:text="로그인"
+                  >login</a
                 >
-                    <svg class="bi me-2" width="40" height="32">
-                        <use xlink:href="#bootstrap" />
-                    </svg>
-                </a>
-                <p class="text-muted">&copy; 2022</p>
-            </div>
+                <a
+                  class="nav-link"
+                  th:if="${auth != null}"
+                  th:href="@{/logout}"
+                  th:text="로그아웃"
+                  >logout</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled">Disabled</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
 
-            <div class="col"></div>
+      <div th:replace="${contents}"></div>
 
-            <div class="col">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Home</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Features</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">About</a>
-                    </li>
-                </ul>
-            </div>
+      <!-- FOOTER -->
+      <div class="container">
+        <footer class="row row-cols-5 py-5 my-5 border-top">
+          <div class="col">
+            <a
+              href="/"
+              class="d-flex align-items-center mb-3 link-dark text-decoration-none"
+            >
+              <svg class="bi me-2" width="40" height="32">
+                <use xlink:href="#bootstrap" />
+              </svg>
+            </a>
+            <p class="text-muted">&copy; 2022</p>
+          </div>
 
-            <div class="col">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Home</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Features</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">About</a>
-                    </li>
-                </ul>
-            </div>
+          <div class="col"></div>
 
-            <div class="col">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Home</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Features</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-muted">About</a>
-                    </li>
-                </ul>
-            </div>
+          <div class="col">
+            <h5>Section</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Home</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Features</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">About</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col">
+            <h5>Section</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Home</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Features</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">About</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col">
+            <h5>Section</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Home</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Features</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
+              </li>
+              <li class="nav-item mb-2">
+                <a href="#" class="nav-link p-0 text-muted">About</a>
+              </li>
+            </ul>
+          </div>
         </footer>
+      </div>
     </div>
-    </div>
-
-</div>
-
-
-</body>
-<script src="/node_modules/jquery/dist/jquery.min.js"></script>
-<script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/node_modules/parsleyjs/dist/parsley.min.js"></script>
-<script th:replace="${script}"></script>
+  </body>
+  <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/node_modules/parsleyjs/dist/parsley.min.js"></script>
+  <script th:replace="${script}"></script>
 </html>

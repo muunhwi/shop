@@ -20,7 +20,6 @@ import java.util.Optional;
 public class MemberService implements UserDetailsService {
 
     private final MemberRepository MemberRepository;
-    private final BCryptPasswordEncoder encoder;
 
     public Long save(Member customer) {
         Member saveCustomer = MemberRepository.save(customer);
@@ -38,6 +37,8 @@ public class MemberService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("email = {}", email);
-        return MemberRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다."));
+        Optional<Member> findMember = MemberRepository.findByEmail(email);
+
+        return findMember.orElseGet(() -> findMember.orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다.")));
     }
 }

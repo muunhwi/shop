@@ -1,4 +1,4 @@
-package com.pofol.shop.domain;
+package com.pofol.shop.domain.dto;
 
 import lombok.Data;
 

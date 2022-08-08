@@ -253,19 +253,90 @@
           >
             <ul class="nav">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#"
-                  >Active</a
-                >
+                <div class="btn-group">
+                  <button
+                    type="button"
+                    class="btn btn-danger dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Action
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=아우터}"
+                        >아우터</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=셔츠}"
+                        >셔츠</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=팬츠}"
+                        >팬츠</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=스포츠}"
+                        >스포츠</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=신발}"
+                        >신발</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=가방}"
+                        >가방</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="#"
+                        th:href="@{/shop/list?category=악세서리}"
+                        >악세서리</a
+                      >
+                    </li>
+                  </ul>
+                </div>
               </li>
               <li class="nav-item">
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalSignin"
+                <a
+                  class="nav-link"
+                  th:if="${auth == null}"
+                  th:href="@{/member/login}"
+                  th:text="로그인"
+                  >login</a
                 >
-                  Login
-                </button>
+                <a
+                  class="nav-link"
+                  th:if="${auth != null}"
+                  th:href="@{/logout}"
+                  th:text="로그아웃"
+                  >logout</a
+                >
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">Link</a>

@@ -1,25 +1,21 @@
 package com.pofol.shop.controller;
 
-import com.pofol.shop.domain.LoginForm;
+import com.pofol.shop.domain.dto.LoginForm;
 import com.pofol.shop.domain.Member;
 import com.pofol.shop.domain.dto.JoinMemberForm;
 import com.pofol.shop.domain.sub.Address;
 import com.pofol.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.Map;
+
 import java.util.Optional;
 
 
@@ -30,21 +26,6 @@ public class MemberController {
 
     private final MemberService memberService;
     private final BCryptPasswordEncoder encoder;
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void init() {
-        Member testMember = Member.builder()
-                .nickname("member")
-                .introduce("hello")
-                .address(new Address("23131","hi","qwdq",""))
-                .sex("남")
-                .email("member@naver.com")
-                .phoneNumber("010-1111-1111")
-                .password(encoder.encode("dwc02207"))
-                .role("ROLE_USER")
-                .build();
-        memberService.save(testMember);
-    }
 
 
     @GetMapping("/member/login")
@@ -105,6 +86,9 @@ public class MemberController {
                 .sex(form.getSex())
                 .address(new Address(form.getZoneCode(), form.getBaseAddress(), form.getDetailAddress(), form.getExtraAddress()))
                 .password(encoder.encode(form.getPassword()))
+                .accountNonLocked(true)
+                .role("ROLE_USER")
+                .enabled(true)
                 .build();
         return member;
     }

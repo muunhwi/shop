@@ -1,16 +1,17 @@
 package com.pofol.shop.domain;
 
 import com.pofol.shop.domain.sub.Address;
+import com.pofol.shop.domain.sub.BaseEntity;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,8 +25,7 @@ import java.util.HashSet;
         allocationSize = 50
 )
 @EqualsAndHashCode(of="id")
-@DynamicInsert
-public class Member implements UserDetails {
+public class Member extends BaseEntity implements UserDetails  {
 
     @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MEMBER_PK_GENERATOR")
     private Long id;
@@ -56,9 +56,13 @@ public class Member implements UserDetails {
     @Column(columnDefinition = "varchar(10) default 'ROLE_USER'")
     private String role;
     @Column(columnDefinition = "boolean default true")
-    boolean accountNonLocked;
+    private boolean accountNonLocked;
     @Column(columnDefinition = "boolean default true")
-    boolean enabled;
+    private boolean enabled;
+
+    @OneToMany(mappedBy = "member")
+    private List<Coupon> coupons = new ArrayList<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -82,5 +86,15 @@ public class Member implements UserDetails {
         return true;
     }
 
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

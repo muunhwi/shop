@@ -1,352 +1,289 @@
 <!DOCTYPE html>
-<html lang="en">
+<html
+  xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{/layout/base :: layout(~{::title}, ~{::section}, ~{::script}, ~{::style})}"
+>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
-      crossorigin="anonymous"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200&display=swap"
-      rel="stylesheet"
-    />
-
-    <style>
-      body {
-        font-family: "Noto Serif KR", serif;
-      }
-      .item > img {
-        display: inline-block;
-        width: 100%;
-        height: 75%;
-        overflow: hidden;
-        object-fit: cover;
-        border-radius: 5px;
-      }
-      #filter {
-        position: relative;
-      }
-    </style>
-
-    <title>Bootstrap demo</title>
+    <title>list</title>
   </head>
+
+  <style>
+    .item > img {
+      display: inline-block;
+      width: 100%;
+      height: 75%;
+      overflow: hidden;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    #filter {
+      position: relative;
+    }
+  </style>
   <body>
     <div class="container-xl">
       <!-- NAVIGATION BAR -->
-      <nav
-        class="navbar navbar-expand-lg navbar-light bg-light shadow-sm border"
-      >
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">
-            <img src="/img/1841331_1_500.jpg" alt="" width="30" height="24" />
-          </a>
-          <a class="navbar-brand" href="#">SHOP</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div
-            class="collapse navbar-collapse justify-content-end"
-            id="navbarNav"
-          >
-            <ul class="nav">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#"
-                  >Active</a
-                >
-              </li>
-              <li class="nav-item"></li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link disabled">Disabled</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+
       <!-- list -->
-      <div class="row g-4 mt-2">
-        <div class="col-xl-3">
-          <div id="filter" class="p-4 border rounded bg-light">
-            <h4 class="header_name">Filter</h4>
-            <ul class="list-group">
-              <li class="list-group-item active" aria-current="true">
-                An active item
-              </li>
-              <li class="list-group-item">A second item</li>
-              <li class="list-group-item">A third item</li>
-              <li class="list-group-item">A fourth item</li>
-              <li class="list-group-item">And a fifth one</li>
-            </ul>
+      <section>
+        <div class="row g-4 mt-2">
+          <div class="col-xl-3">
+            <!-- filter -->
+            <div
+              id="filter"
+              class="p-4 border rounded bg-light"
+              th:object="${filter}"
+            >
+              <h4 class="header_name">Filter</h4>
+              <div class="accordion" id="accordionPanelsStayOpenExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                    <button
+                      class="accordion-button"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#panelsStayOpen-collapseOne"
+                      aria-expanded="true"
+                      aria-controls="panelsStayOpen-collapseOne"
+                    >
+                      Category
+                    </button>
+                  </h2>
+                  <div
+                    id="panelsStayOpen-collapseOne"
+                    class="accordion-collapse collapse show"
+                    aria-labelledby="panelsStayOpen-headingOne"
+                  >
+                    <div class="accordion-body">
+                      <th:block th:each="subcategory : ${filter.subcategories}">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="subCategory"
+                            id="subCategory"
+                          />
+                          <label
+                            class="form-check-label"
+                            for="flexRadioDefault1"
+                            th:text="${subcategory.getName()}"
+                          >
+                          </label>
+                        </div>
+                      </th:block>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#panelsStayOpen-collapseTwo"
+                      aria-expanded="false"
+                      aria-controls="panelsStayOpen-collapseTwo"
+                    >
+                      color
+                    </button>
+                  </h2>
+                  <div
+                    id="panelsStayOpen-collapseTwo"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="panelsStayOpen-headingTwo"
+                  >
+                    <div class="accordion-body">
+                      <th:block th:each="color : ${filter.colors}">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="color"
+                            id="color"
+                          />
+                          <label
+                            class="form-check-label"
+                            for="flexRadioDefault1"
+                            th:text="${color}"
+                          >
+                          </label>
+                        </div>
+                      </th:block>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#panelsStayOpen-collapseThree"
+                      aria-expanded="false"
+                      aria-controls="panelsStayOpen-collapseThree"
+                    >
+                      Price
+                    </button>
+                  </h2>
+                  <div
+                    id="panelsStayOpen-collapseThree"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="panelsStayOpen-headingThree"
+                  >
+                    <div class="accordion-body">
+                      <th:block th:each="size: ${filter.sizes}">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="size"
+                            id="size"
+                          />
+                          <label
+                            class="form-check-label"
+                            for="flexRadioDefault1"
+                            th:text="${size}"
+                          >
+                          </label>
+                        </div>
+                      </th:block>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+                    <button
+                      class="accordion-button collapsed"
+                      type="button"
+                      data-bs-toggle="collapse"
+                      data-bs-target="#panelsStayOpen-collapseFour"
+                      aria-expanded="false"
+                      aria-controls="panelsStayOpen-collapseFour"
+                    >
+                      Sort
+                    </button>
+                  </h2>
+                  <div
+                    id="panelsStayOpen-collapseFour"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="panelsStayOpen-headingFour"
+                  >
+                    <div class="accordion-body">
+                      <th:block th:each="sort: ${filter.sorts}">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            th:name="sort"
+                            th:id="sort"
+                          />
+                          <label
+                            class="form-check-label"
+                            for="flexRadioDefault1"
+                            th:if="${#strings.equals(sort, 'highestPrice')}"
+                            th:text="|높은 가격순|"
+                          >
+                          </label>
+                          <label
+                            class="form-check-label"
+                            for="flexRadioDefault1"
+                            th:if="${#strings.equals(sort, 'highestSalesRate')}"
+                            th:text="|높은 판매순|"
+                          >
+                          </label>
+                          <label
+                            class="form-check-label"
+                            for="flexRadioDefault1"
+                            th:if="${#strings.equals(sort, 'highestReviewGrade')}"
+                            th:text="|높은 평점순|"
+                          >
+                          </label>
+                          <label
+                            class="form-check-label"
+                            for="flexRadioDefault1"
+                            th:if="${#strings.equals(sort, 'lowestPrice')}"
+                            th:text="|낮은 가격순|"
+                          >
+                          </label>
+                        </div>
+                      </th:block>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="col-xl-9">
-          <div class="p-3 border rounded bg-light">
-            <h4 class="header_name">Items</h4>
-            <div class="container">
-              <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3">
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img
-                    src="/img/girl-woman-female-standing-fashion-clothing-1218703-pxhere.com.jpg"
-                    alt=""
-                  />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img
-                    src="/img/girl-woman-female-standing-fashion-clothing-1218703-pxhere.com.jpg"
-                    alt=""
-                  />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
-                  </div>
-                </div>
-                <div class="item col">
-                  <img src="/img/449673_4_500.jpg" alt="" />
-                  <div style="text-align: center">
-                    <h5>gray-product</h5>
-                    <h6>color : gray</h6>
-                    <h6>size : M</h6>
-                    <h6>price : $500</h6>
+          <div class="col-xl-9">
+            <div class="p-3 border rounded bg-light">
+              <h4 class="header_name">Items</h4>
+              <div class="container">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3">
+                  <div class="item col">
+                    <img src="/img/449673_4_500.jpg" alt="" />
+                    <div style="text-align: center">
+                      <h5>gray-product</h5>
+                      <h6>color : gray</h6>
+                      <h6>size : M</h6>
+                      <h6>price : $500</h6>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- page -->
-      <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-end mt-5">
-          <li class="page-item disabled">
-            <a class="page-link">&lt</a>
-          </li>
-          <li class="page-item"><a class="page-link" href="#">1</a></li>
-          <li class="page-item"><a class="page-link" href="#">2</a></li>
-          <li class="page-item"><a class="page-link" href="#">3</a></li>
-          <li class="page-item">
-            <a class="page-link" href="#">&gt</a>
-          </li>
-        </ul>
-      </nav>
+        <!-- page -->
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-end mt-5">
+            <li class="page-item disabled">
+              <a class="page-link">&lt</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#">&gt</a>
+            </li>
+          </ul>
+        </nav>
 
-      <!--BEST PRODUCT -->
-      <h2 class="pb-2 border-bottom mt-5">BEST PRODUCT</h2>
-      <div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
-        <div class="item col">
-          <img src="/img/449673_4_500.jpg" alt="" />
-          <div style="text-align: center">
-            <h5>gray-product</h5>
-            <h6>color : gray</h6>
-            <h6>size : M</h6>
-            <h6>price : $500</h6>
+        <!--BEST PRODUCT -->
+        <h2 class="pb-2 border-bottom mt-5">BEST PRODUCT</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
+          <div class="item col">
+            <img src="/img/449673_4_500.jpg" alt="" />
+            <div style="text-align: center">
+              <h5>gray-product</h5>
+              <h6>color : gray</h6>
+              <h6>size : M</h6>
+              <h6>price : $500</h6>
+            </div>
+          </div>
+          <div class="item col">
+            <img src="/img/blank-1976334_1280.png" alt="" />
+            <div style="text-align: center">
+              <h5>gray-product</h5>
+              <h6>color : gray</h6>
+              <h6>size : M</h6>
+              <h6>price : $500</h6>
+            </div>
+          </div>
+          <div class="item col">
+            <img
+              src="/img/girl-woman-female-standing-fashion-clothing-1218703-pxhere.com.jpg"
+              alt=""
+            />
+            <div style="text-align: center">
+              <h5>gray-product</h5>
+              <h6>color : gray</h6>
+              <h6>size : M</h6>
+              <h6>price : $500</h6>
+            </div>
           </div>
         </div>
-        <div class="item col">
-          <img src="/img/blank-1976334_1280.png" alt="" />
-          <div style="text-align: center">
-            <h5>gray-product</h5>
-            <h6>color : gray</h6>
-            <h6>size : M</h6>
-            <h6>price : $500</h6>
-          </div>
-        </div>
-        <div class="item col">
-          <img
-            src="/img/girl-woman-female-standing-fashion-clothing-1218703-pxhere.com.jpg"
-            alt=""
-          />
-          <div style="text-align: center">
-            <h5>gray-product</h5>
-            <h6>color : gray</h6>
-            <h6>size : M</h6>
-            <h6>price : $500</h6>
-          </div>
-        </div>
-      </div>
-
-      <!-- FOOTER -->
-      <div class="container">
-        <footer class="row row-cols-5 py-5 my-5 border-top">
-          <div class="col">
-            <a
-              href="/"
-              class="d-flex align-items-center mb-3 link-dark text-decoration-none"
-            >
-              <svg class="bi me-2" width="40" height="32">
-                <use xlink:href="#bootstrap" />
-              </svg>
-            </a>
-            <p class="text-muted">&copy; 2022</p>
-          </div>
-
-          <div class="col"></div>
-
-          <div class="col">
-            <h5>Section</h5>
-            <ul class="nav flex-column">
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Home</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Features</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">About</a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="col">
-            <h5>Section</h5>
-            <ul class="nav flex-column">
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Home</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Features</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">About</a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="col">
-            <h5>Section</h5>
-            <ul class="nav flex-column">
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Home</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Features</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">About</a>
-              </li>
-            </ul>
-          </div>
-        </footer>
-      </div>
+      </section>
     </div>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
-      crossorigin="anonymous"
-    ></script>
     <script>
       let filter = document.getElementById("filter");
 
@@ -357,11 +294,11 @@
       });
 
       window.addEventListener("scroll", () => {
-        if (window.pageYOffset > 1700 || window.innerWidth < 1400) {
-          filter.style.top = "0px";
-        } else {
-          filter.style.top = window.pageYOffset + "px";
-        }
+          if (window.pageYOffset > 1700 || window.innerWidth < 1400 || (filter.style.height < 1600) {
+            filter.style.top = "0px";
+          } else {
+            filter.style.top = window.pageYOffset + "px";
+          }
       });
     </script>
   </body>
