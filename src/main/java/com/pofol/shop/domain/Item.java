@@ -1,6 +1,7 @@
 package com.pofol.shop.domain;
 
 import com.pofol.shop.domain.sub.BaseEntity;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,8 +11,8 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @SequenceGenerator(
         name = "ITEM_PK_GENERATOR",
         sequenceName = "ITEM_PK_SEQ",
@@ -20,6 +21,8 @@ import java.util.List;
 )
 @EqualsAndHashCode(of="id")
 public class Item extends BaseEntity {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ITEM_PK_GENERATOR")
     private Long id;
@@ -30,9 +33,13 @@ public class Item extends BaseEntity {
 
     private int quantity;
 
-    private String size;
+    @OneToOne
+    @JoinColumn(name = "size_id")
+    private Size size;
 
-    private String color;
+    @OneToOne
+    @JoinColumn(name = "color_id")
+    private Color color;
 
     private Double reviewGrade;
 
@@ -42,7 +49,7 @@ public class Item extends BaseEntity {
     @JoinColumn(name = "sub_category_id")
     private Subcategory subCategory;
 
-    @OneToMany(mappedBy = "item")
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<ItemImage> itemImagesList = new ArrayList<>();
 
     @OneToMany(mappedBy = "item")

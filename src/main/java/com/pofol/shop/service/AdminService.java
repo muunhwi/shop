@@ -78,6 +78,8 @@ public class AdminService {
         int month = LocalDate.now().getMonthValue();
         int day = LocalDate.now().getDayOfMonth();
         File folder = new File(fileDirectory + year + separator + month + separator + day + separator);
+        String src = "/img/" + year + "/" + month + "/" + day;
+
         if(!folder.exists()) {
             try {
                 folder.mkdirs();
@@ -85,7 +87,7 @@ public class AdminService {
                 e.getMessage();
             }
         }
-        return folder.getPath();
+        return src;
     }
 
 

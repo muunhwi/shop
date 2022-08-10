@@ -14,7 +14,12 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.util.UriUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 import static com.pofol.shop.domain.sub.StaticContainer.*;
 
@@ -38,18 +43,28 @@ public class ShopController {
     }
 
     @GetMapping("/shop/list")
-    public String list(ItemCondition condition, @PageableDefault(page = 0, size=16) Pageable pageable, Model model) {
+    public String list(ItemCondition condition, @PageableDefault(page = 0, size=18) Pageable pageable, Model model) throws UnsupportedEncodingException {
 
-        log.info(condition.getCategory());
+        ItemFilterDTO filter = null;
+        Long categoryId = condition.getCategory();
+        Long subcategoryId = condition.getSubcategory();
 
-        ItemFilterDTO filter = shopService.findSubCategoriesByCategoryName(condition.getCategory(), condition.getSubCategory());
+        if(categoryId == null) {
+            filter = shopService.noParamFilter();
+            model.addAttribute("categories", shopService.allCategories());
+        } else {
+            filter = shopService.findSubCategoriesByCategoryName(categoryId, subcategoryId);
+            model.addAttribute("category", categoryId);
+        }
+
         Page<ItemDTO> list = shopService.findFilterItemListByItemCondition(condition, pageable);
-
         model.addAttribute("list", list);
         model.addAttribute("filter", filter);
 
+
         return "/shop/list";
     }
+
 
 
 }

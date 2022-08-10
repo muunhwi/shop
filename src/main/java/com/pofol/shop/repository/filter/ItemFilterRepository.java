@@ -1,11 +1,15 @@
 package com.pofol.shop.repository.filter;
 
 
+import com.pofol.shop.domain.Item;
+import com.pofol.shop.domain.ItemImage;
 import com.pofol.shop.domain.dto.ItemCondition;
 import com.pofol.shop.domain.dto.ItemDTO;
+
+import com.pofol.shop.domain.dto.ItemMainImageDTO;
 import com.pofol.shop.domain.dto.QItemDTO;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -18,8 +22,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.pofol.shop.domain.QCategory.category;
 import static com.pofol.shop.domain.QItem.*;
@@ -37,31 +44,44 @@ public class ItemFilterRepository {
 
         OrderSpecifier<?>[] orders = getOrderSpecifiers(condition);
 
-        List<ItemDTO> list = queryFactory.select(new QItemDTO(
-                item.name,
-                item.price,
-                item.quantity,
-                item.size,
-                item.color,
-                item.reviewGrade,
-                item.salesRate,
-                subcategory.name,
-                category.name
-        ))
+        List<Item> items = queryFactory.select(item)
                 .from(item)
                 .innerJoin(item.subCategory, subcategory)
+                .fetchJoin()
                 .innerJoin(subcategory.category, category)
+                .fetchJoin()
                 .where(
                         categoryEq(condition.getCategory()),
-                        subCategoryEq(condition.getCategory()),
+                        subCategoryEq(condition.getSubcategory()),
                         colorEq(condition.getColor()),
                         sizeEq(condition.getSize()),
                         priceRange(condition.getMinPrice(), condition.getMaxPrice())
                 ).orderBy(
-                    orders
+                        orders
                 ).offset(pageable.getOffset()
                 ).limit(pageable.getPageSize())
                 .fetch();
+
+        List<ItemDTO> list = items.stream().map(i -> {
+            ItemDTO itemDTO = new ItemDTO(
+                    i.getName(),
+                    i.getPrice(),
+                    i.getQuantity(),
+                    i.getSize().getName(),
+                    i.getColor().getName(),
+                    i.getReviewGrade(),
+                    i.getSalesRate(),
+                    i.getSubCategory().getName(),
+                    i.getSubCategory().getCategory().getName());
+            Optional<ItemMainImageDTO> mainImage = i.getItemImagesList()
+                    .stream()
+                    .filter(ItemImage::getIsMainImg)
+                    .map(img -> new ItemMainImageDTO(img.getLocation(), img.getServerSavedName()))
+                    .findFirst();
+            itemDTO.setMainImage(mainImage.orElseThrow(() -> {throw new EntityNotFoundException();}));
+            return itemDTO;
+        }).collect(Collectors.toList());
+
 
         JPAQuery<Long> countQuery = queryFactory.select(item.count())
                 .from(item)
@@ -105,31 +125,34 @@ public class ItemFilterRepository {
         return arr;
     }
 
-    private BooleanExpression categoryEq(String category) {
-        if(StringUtils.hasText(category)) {
-            return item.subCategory.category.name.eq(category);
+    private BooleanExpression categoryEq(Long category) {
+        if(category != null) {
+            log.info("category = {}", category);
+            return item.subCategory.category.id.eq(category);
         }
         return null;
     }
 
-    private BooleanExpression subCategoryEq(String category) {
-        if(StringUtils.hasText(category)) {
-            return item.subCategory.name.eq(category);
+    private BooleanExpression subCategoryEq(Long category) {
+        if(category != null) {
+            log.info("subcategory = {}", category);
+            return item.subCategory.id.eq(category);
         }
         return null;
     }
 
 
-    private BooleanExpression colorEq(String color) {
-        if(StringUtils.hasText(color)) {
-            return item.color.eq(color);
+    private BooleanExpression colorEq(Long color) {
+        if(color != null) {
+            log.info("color = {}", color);
+            return item.color.id.eq(color);
         }
         return null;
     }
 
-    private BooleanExpression sizeEq(String size) {
-        if(StringUtils.hasText(size)) {
-            return item.size.eq(size);
+    private BooleanExpression sizeEq(Long size) {
+        if(size != null) {
+            return item.size.id.eq(size);
         }
         return null;
     }

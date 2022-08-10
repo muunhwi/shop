@@ -4,6 +4,7 @@
   th:replace="~{/layout/base :: layout(~{::title}, ~{::section}, ~{::script}, ~{::style})}"
 >
   <head>
+    <meta charset="UTF-8" />
     <title>list</title>
   </head>
 
@@ -54,26 +55,40 @@
                     class="accordion-collapse collapse show"
                     aria-labelledby="panelsStayOpen-headingOne"
                   >
-                    <div class="accordion-body">
-                      <th:block th:each="subcategory : ${filter.subcategories}">
-                        <div class="form-check">
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            name="subCategory"
-                            id="subCategory"
-                          />
-                          <label
-                            class="form-check-label"
-                            for="flexRadioDefault1"
-                            th:text="${subcategory.getName()}"
-                          >
-                          </label>
+                    <div class="accordion-body" id="subcategory_container">
+                      <th:block
+                        th:if="${category == null}"
+                        th:each="categoryName : ${categories}"
+                      >
+                        <div
+                          th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                        >
+                          <a
+                            th:href="${urlBuilder.replaceQueryParam('category',categoryName.id).toUriString()}"
+                            th:text="${categoryName.name}"
+                          ></a>
+                        </div>
+                      </th:block>
+
+                      <th:block
+                        th:if="${category != null }"
+                        th:each="subcategory : ${filter.subcategories}"
+                      >
+                        <div
+                          th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                        >
+                          <a
+                            th:id="|subcategory_${subcategory.id}|"
+                            class="list-group-item"
+                            th:href="@{${urlBuilder.replaceQueryParam('subcategory',subcategory.id).toUriString()}}"
+                            th:text="${subcategory.name}"
+                          ></a>
                         </div>
                       </th:block>
                     </div>
                   </div>
                 </div>
+
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
                     <button
@@ -89,29 +104,26 @@
                   </h2>
                   <div
                     id="panelsStayOpen-collapseTwo"
-                    class="accordion-collapse collapse"
+                    class="accordion-collapse collapse show"
                     aria-labelledby="panelsStayOpen-headingTwo"
                   >
                     <div class="accordion-body">
                       <th:block th:each="color : ${filter.colors}">
-                        <div class="form-check">
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            name="color"
-                            id="color"
-                          />
-                          <label
-                            class="form-check-label"
-                            for="flexRadioDefault1"
-                            th:text="${color}"
-                          >
-                          </label>
+                        <div
+                          th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                        >
+                          <a
+                            th:id="|color_${color.id}|"
+                            class="list-group-item"
+                            th:href="${urlBuilder.replaceQueryParam('color', color.id).toUriString()}"
+                            th:text="${color.name}"
+                          ></a>
                         </div>
                       </th:block>
                     </div>
                   </div>
                 </div>
+
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="panelsStayOpen-headingThree">
                     <button
@@ -122,34 +134,31 @@
                       aria-expanded="false"
                       aria-controls="panelsStayOpen-collapseThree"
                     >
-                      Price
+                      Size
                     </button>
                   </h2>
                   <div
                     id="panelsStayOpen-collapseThree"
-                    class="accordion-collapse collapse"
+                    class="accordion-collapse collapse show"
                     aria-labelledby="panelsStayOpen-headingThree"
                   >
                     <div class="accordion-body">
                       <th:block th:each="size: ${filter.sizes}">
-                        <div class="form-check">
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            name="size"
-                            id="size"
-                          />
-                          <label
-                            class="form-check-label"
-                            for="flexRadioDefault1"
-                            th:text="${size}"
-                          >
-                          </label>
+                        <div
+                          th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                        >
+                          <a
+                            th:id="|size_${size.id}|"
+                            class="list-group-item"
+                            th:href="${urlBuilder.replaceQueryParam('size', size.id).toUriString()}"
+                            th:text="${size.name}"
+                          ></a>
                         </div>
                       </th:block>
                     </div>
                   </div>
                 </div>
+
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="panelsStayOpen-headingFour">
                     <button
@@ -165,46 +174,49 @@
                   </h2>
                   <div
                     id="panelsStayOpen-collapseFour"
-                    class="accordion-collapse collapse"
+                    class="accordion-collapse collapse show"
                     aria-labelledby="panelsStayOpen-headingFour"
                   >
                     <div class="accordion-body">
-                      <th:block th:each="sort: ${filter.sorts}">
-                        <div class="form-check">
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            th:name="sort"
-                            th:id="sort"
-                          />
-                          <label
-                            class="form-check-label"
-                            for="flexRadioDefault1"
+                      <th:block
+                        th:each="sort: ${filter.sorts}"
+                        th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                      >
+                        <div>
+                          <a
                             th:if="${#strings.equals(sort, 'highestPrice')}"
+                            class="list-group-item"
+                            th:id="|sort_${sort}|"
+                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('highestPrice', true).toUriString()}"
                             th:text="|높은 가격순|"
-                          >
-                          </label>
-                          <label
-                            class="form-check-label"
-                            for="flexRadioDefault1"
+                          ></a>
+                        </div>
+                        <div>
+                          <a
                             th:if="${#strings.equals(sort, 'highestSalesRate')}"
+                            th:id="|sort_${sort}|"
+                            class="list-group-item"
+                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('highestSalesRate', true).toUriString()}"
                             th:text="|높은 판매순|"
-                          >
-                          </label>
-                          <label
-                            class="form-check-label"
-                            for="flexRadioDefault1"
+                          ></a>
+                        </div>
+                        <div>
+                          <a
                             th:if="${#strings.equals(sort, 'highestReviewGrade')}"
+                            th:id="|sort_${sort}|"
+                            class="list-group-item"
+                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('highestReviewGrade', true).toUriString()}"
                             th:text="|높은 평점순|"
-                          >
-                          </label>
-                          <label
-                            class="form-check-label"
-                            for="flexRadioDefault1"
+                          ></a>
+                        </div>
+                        <div>
+                          <a
                             th:if="${#strings.equals(sort, 'lowestPrice')}"
+                            th:id="|sort_${sort}|"
+                            class="list-group-item"
+                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('lowestPrice', true).toUriString()}"
                             th:text="|낮은 가격순|"
-                          >
-                          </label>
+                          ></a>
                         </div>
                       </th:block>
                     </div>
@@ -218,15 +230,22 @@
               <h4 class="header_name">Items</h4>
               <div class="container">
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3">
-                  <div class="item col">
-                    <img src="/img/449673_4_500.jpg" alt="" />
-                    <div style="text-align: center">
-                      <h5>gray-product</h5>
-                      <h6>color : gray</h6>
-                      <h6>size : M</h6>
-                      <h6>price : $500</h6>
+                  <th:block th:each="item : ${list}">
+                    <div class="item col">
+                      <img
+                        th:src="|${item.mainImage.location}/${item.mainImage.serverSavedName}|"
+                        alt=""
+                      />
+                      <div style="text-align: center">
+                        <h5 th:text="${item.name}">gray-product</h5>
+                        <h6 th:text="${item.color}">color : gray</h6>
+                        <h6 th:text="${item.size}">size : M</h6>
+                        <h6 th:text="${item.price}">price : $500</h6>
+                        <h6 th:text="${item.category}"></h6>
+                        <h6 th:text="${item.subcategory}"></h6>
+                      </div>
                     </div>
-                  </div>
+                  </th:block>
                 </div>
               </div>
             </div>
@@ -234,19 +253,53 @@
         </div>
 
         <!-- page -->
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-end mt-5">
-            <li class="page-item disabled">
-              <a class="page-link">&lt</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-              <a class="page-link" href="#">&gt</a>
-            </li>
-          </ul>
-        </nav>
+        <div th:if="${!list.isEmpty()}">
+          <nav
+            th:with="
+                pageNumber = ${list.pageable.pageNumber},
+                pageSize = ${list.pageable.pageSize},
+                totalPages = ${list.totalPages},
+                startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
+                tempEndPage = ${startPage + pageSize - 1},
+                endPage = (${tempEndPage > totalPages ? totalPages : tempEndPage}),
+                urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+            aria-label="Page navigation example"
+          >
+            <ul class="pagination justify-content-end mt-5">
+              <li
+                th:classappend="${pageNumber + 1 <= pageSize + 1} ? 'disabled'"
+                class="page-item disabled"
+              >
+                <a
+                  class="page-link"
+                  th:href="${list.first} ? '#' : @{{url}(url=${urlBuilder.toUriString()}, page=${#numbers.formatDecimal(startPage - pageSize,0,-1)})}"
+                  >&lt</a
+                >
+              </li>
+
+              <li
+                th:each="page: ${#numbers.sequence(startPage, endPage)}"
+                th:classappend="${page == pageNumber + 1} ? 'active'"
+                class="page-item"
+              >
+                <a
+                  class="page-link"
+                  th:href="${urlBuilder.replaceQueryParam('page',page-1).toUriString()}"
+                  th:text="${page}"
+                  >1</a
+                >
+              </li>
+
+              <li class="page-item" th:classappend="${list.last} ? 'disabled'">
+                <a
+                  class="page-link"
+                  th:href="${list.last} ? '#' : @{{url}(url=${urlBuilder.toUriString()}, page=${#numbers.formatDecimal(startPage + pageSize,0,-1)})}"
+                  >&gt</a
+                >
+              </li>
+            </ul>
+          </nav>
+        </div>
 
         <!--BEST PRODUCT -->
         <h2 class="pb-2 border-bottom mt-5">BEST PRODUCT</h2>
@@ -285,7 +338,9 @@
       </section>
     </div>
     <script>
-      let filter = document.getElementById("filter");
+      var filter = document.getElementById("filter");
+      var subcategory = document.getElementById("subcategory_container");
+      var originHref = location.href;
 
       window.addEventListener("resize", () => {
         if (window.innerWidth < 1400) {
@@ -294,11 +349,36 @@
       });
 
       window.addEventListener("scroll", () => {
-          if (window.pageYOffset > 1700 || window.innerWidth < 1400 || (filter.style.height < 1600) {
-            filter.style.top = "0px";
-          } else {
-            filter.style.top = window.pageYOffset + "px";
+        if (
+          window.pageYOffset > 1700 ||
+          window.innerWidth < 1400 ||
+          filter.style.height < 1600
+        ) {
+          filter.style.top = "0px";
+        } else {
+          filter.style.top = window.pageYOffset + "px";
+        }
+      });
+
+      window.addEventListener("load", () => {
+        const paramMap = new URLSearchParams(location.search);
+        for (const param of paramMap) {
+          console.log(param[0]);
+          console.log(param[1]);
+
+          if (param[0] === "subcategory") {
+            const subcategory = document.getElementById(
+              "subcategory_" + param[1]
+            );
+            subcategory.classList.add("fw-bold");
+          } else if (param[0] === "color") {
+            const color = document.getElementById("color_" + param[1]);
+            color.classList.add("fw-bold");
+          } else if (param[0] === "size") {
+            const size = document.getElementById("size_" + param[1]);
+            size.classList.add("fw-bold");
           }
+        }
       });
     </script>
   </body>

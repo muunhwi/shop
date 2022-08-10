@@ -23,13 +23,17 @@ public class ItemImage {
     private Long id;
 
     private String location;
-    private String userCustomName;
     private String serverSavedName;
     private Boolean isMainImg;
+    private String userCustomName;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
 
 
 }

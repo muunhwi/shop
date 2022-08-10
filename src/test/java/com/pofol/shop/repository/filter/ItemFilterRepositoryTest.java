@@ -1,9 +1,11 @@
 package com.pofol.shop.repository.filter;
 
 import com.pofol.shop.App;
+import com.pofol.shop.domain.Size;
 import com.pofol.shop.domain.dto.ItemCondition;
 import com.pofol.shop.domain.dto.ItemDTO;
 import com.pofol.shop.repository.ItemRepository;
+import com.pofol.shop.repository.SizeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +25,8 @@ class ItemFilterRepositoryTest {
 
     @Autowired
     ItemFilterRepository itemFilterRepository;
+    @Autowired
+    SizeRepository sizeRepository;
     @Autowired
     ItemRepository itemRepository;
 
@@ -33,6 +38,7 @@ class ItemFilterRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<ItemDTO> list = itemFilterRepository.getFilterItemList(condition, pageable);
+
         List<ItemDTO> content = list.getContent();
         assertEquals(0, list.getNumber());
         assertEquals(10, list.getSize());
@@ -46,7 +52,7 @@ class ItemFilterRepositoryTest {
     @DisplayName("조건 color 추가 쿼리")
     public void filterQuery_2() throws Exception {
         ItemCondition condition = new ItemCondition();
-        condition.setColor("블랙");
+        condition.setColor(0L);
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<ItemDTO> list = itemFilterRepository.getFilterItemList(condition, pageable);
@@ -61,14 +67,15 @@ class ItemFilterRepositoryTest {
     @DisplayName("조건 size 추가 쿼리")
     public void  filterQuery_3() throws Exception {
         ItemCondition condition = new ItemCondition();
-        condition.setSize("M");
+        condition.setSize(2L);
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<ItemDTO> list = itemFilterRepository.getFilterItemList(condition, pageable);
+        Optional<Size> size = sizeRepository.findById(2L);
 
         List<ItemDTO> content = list.getContent();
         for (ItemDTO itemDTO : content) {
-            assertEquals("M", itemDTO.getSize());
+            assertEquals(size.get().getName(), itemDTO.getSize());
         }
     }
 
@@ -114,7 +121,7 @@ class ItemFilterRepositoryTest {
         Page<ItemDTO> list = itemFilterRepository.getFilterItemList(condition, pageable);
 
         List<ItemDTO> content = list.getContent();
-        assertEquals(90000,content.get(0).getPrice());
+        assertEquals(80000,content.get(0).getPrice());
     }
 
     @Test

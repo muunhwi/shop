@@ -4,6 +4,8 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 public class ItemDTO {
@@ -17,8 +19,8 @@ public class ItemDTO {
         this.color = color;
         this.reviewGrade = reviewGrade;
         this.salesRate = salesRate;
-        this.subCategoryName = subCategoryName;
-        this.categoryName = categoryName;
+        this.subcategory = subCategoryName;
+        this.category = categoryName;
     }
 
     private String name;
@@ -28,7 +30,9 @@ public class ItemDTO {
     private String color;
     private Double reviewGrade;
     private int salesRate;
-    private String subCategoryName;
-    private String categoryName;
+    private String subcategory;
+    private String category;
+    private ItemMainImageDTO mainImage;
+
 
 }

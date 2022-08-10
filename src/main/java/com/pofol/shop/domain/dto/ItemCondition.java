@@ -2,14 +2,15 @@ package com.pofol.shop.domain.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 @Data
 public class ItemCondition {
 
-    private String color;
-    private String category;
-    private String subCategory;
-    private String size;
+    private Long color;
+    private Long category;
+    private Long subcategory;
+    private Long size;
     private Integer minPrice;
     private Integer maxPrice;
     private Boolean highestPrice;

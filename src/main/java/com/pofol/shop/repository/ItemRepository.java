@@ -12,4 +12,5 @@ public interface ItemRepository extends JpaRepository<Item,Long> {
     @Query(value = "select max(i.sales_rate) from Item i", nativeQuery = true)
     int findMaxSalesRate();
 
+
 }
