@@ -11,8 +11,6 @@ public class ItemCondition {
     private Long category;
     private Long subcategory;
     private Long size;
-    private Integer minPrice;
-    private Integer maxPrice;
     private Boolean highestPrice;
     private Boolean highestSalesRate;
     private Boolean highestReviewGrade;

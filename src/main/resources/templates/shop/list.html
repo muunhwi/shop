@@ -64,7 +64,8 @@
                           th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
                         >
                           <a
-                            th:href="${urlBuilder.replaceQueryParam('category',categoryName.id).toUriString()}"
+                            class="list-group-item"
+                            th:href="${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('category',categoryName.id).toUriString()}"
                             th:text="${categoryName.name}"
                           ></a>
                         </div>
@@ -80,7 +81,7 @@
                           <a
                             th:id="|subcategory_${subcategory.id}|"
                             class="list-group-item"
-                            th:href="@{${urlBuilder.replaceQueryParam('subcategory',subcategory.id).toUriString()}}"
+                            th:href="@{${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('subcategory',subcategory.id).toUriString()}}"
                             th:text="${subcategory.name}"
                           ></a>
                         </div>
@@ -115,7 +116,7 @@
                           <a
                             th:id="|color_${color.id}|"
                             class="list-group-item"
-                            th:href="${urlBuilder.replaceQueryParam('color', color.id).toUriString()}"
+                            th:href="${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('color', color.id).toUriString()}"
                             th:text="${color.name}"
                           ></a>
                         </div>
@@ -150,7 +151,7 @@
                           <a
                             th:id="|size_${size.id}|"
                             class="list-group-item"
-                            th:href="${urlBuilder.replaceQueryParam('size', size.id).toUriString()}"
+                            th:href="${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('size', size.id).toUriString()}"
                             th:text="${size.name}"
                           ></a>
                         </div>
@@ -187,7 +188,7 @@
                             th:if="${#strings.equals(sort, 'highestPrice')}"
                             class="list-group-item"
                             th:id="|sort_${sort}|"
-                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('highestPrice', true).toUriString()}"
+                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('page',0).replaceQueryParam('highestPrice', true).toUriString()}"
                             th:text="|높은 가격순|"
                           ></a>
                         </div>
@@ -196,7 +197,7 @@
                             th:if="${#strings.equals(sort, 'highestSalesRate')}"
                             th:id="|sort_${sort}|"
                             class="list-group-item"
-                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('highestSalesRate', true).toUriString()}"
+                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('page',0).replaceQueryParam('highestSalesRate', true).toUriString()}"
                             th:text="|높은 판매순|"
                           ></a>
                         </div>
@@ -205,7 +206,7 @@
                             th:if="${#strings.equals(sort, 'highestReviewGrade')}"
                             th:id="|sort_${sort}|"
                             class="list-group-item"
-                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('highestReviewGrade', true).toUriString()}"
+                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('page',0).replaceQueryParam('highestReviewGrade', true).toUriString()}"
                             th:text="|높은 평점순|"
                           ></a>
                         </div>
@@ -214,7 +215,7 @@
                             th:if="${#strings.equals(sort, 'lowestPrice')}"
                             th:id="|sort_${sort}|"
                             class="list-group-item"
-                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('lowestPrice', true).toUriString()}"
+                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('page',0).replaceQueryParam('lowestPrice', true).toUriString()}"
                             th:text="|낮은 가격순|"
                           ></a>
                         </div>
@@ -225,22 +226,22 @@
               </div>
             </div>
           </div>
-          <div class="col-xl-9">
+          <div class="col-xl-9 p-3">
             <div class="p-3 border rounded bg-light">
               <h4 class="header_name">Items</h4>
               <div class="container">
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3">
                   <th:block th:each="item : ${list}">
-                    <div class="item col">
+                    <div class="item col mt-4">
                       <img
                         th:src="|${item.mainImage.location}/${item.mainImage.serverSavedName}|"
                         alt=""
                       />
                       <div style="text-align: center">
-                        <h5 th:text="${item.name}">gray-product</h5>
+                        <h6 th:text="${item.name}">gray-product</h6>
                         <h6 th:text="${item.color}">color : gray</h6>
                         <h6 th:text="${item.size}">size : M</h6>
-                        <h6 th:text="${item.price}">price : $500</h6>
+                        <h6 th:text="|${{item.price}}₩|">price : $500</h6>
                         <h6 th:text="${item.category}"></h6>
                         <h6 th:text="${item.subcategory}"></h6>
                       </div>
@@ -266,13 +267,10 @@
             aria-label="Page navigation example"
           >
             <ul class="pagination justify-content-end mt-5">
-              <li
-                th:classappend="${pageNumber + 1 <= pageSize + 1} ? 'disabled'"
-                class="page-item disabled"
-              >
+              <li th:classappend="${list.first} ? 'disabled'" class="page-item">
                 <a
                   class="page-link"
-                  th:href="${list.first} ? '#' : @{{url}(url=${urlBuilder.toUriString()}, page=${#numbers.formatDecimal(startPage - pageSize,0,-1)})}"
+                  th:href="${list.first} ? '#' : ${urlBuilder.replaceQueryParam('page',pageNumber -1).toUriString()}"
                   >&lt</a
                 >
               </li>
@@ -293,7 +291,7 @@
               <li class="page-item" th:classappend="${list.last} ? 'disabled'">
                 <a
                   class="page-link"
-                  th:href="${list.last} ? '#' : @{{url}(url=${urlBuilder.toUriString()}, page=${#numbers.formatDecimal(startPage + pageSize,0,-1)})}"
+                  th:href="${list.last} ? '#' :  ${urlBuilder.replaceQueryParam('page',pageNumber+1).toUriString()}"
                   >&gt</a
                 >
               </li>
@@ -304,68 +302,29 @@
         <!--BEST PRODUCT -->
         <h2 class="pb-2 border-bottom mt-5">BEST PRODUCT</h2>
         <div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
-          <div class="item col">
-            <img src="/img/449673_4_500.jpg" alt="" />
-            <div style="text-align: center">
-              <h5>gray-product</h5>
-              <h6>color : gray</h6>
-              <h6>size : M</h6>
-              <h6>price : $500</h6>
+          <th:block th:each="item : ${top3}">
+            <div class="item col">
+              <img
+                th:src="|${item.mainImage.location}/${item.mainImage.serverSavedName}|"
+                alt=""
+              />
+              <div style="text-align: center">
+                <h5 th:text="${item.name}">gray-product</h5>
+                <h6 th:text="${item.color}">color : gray</h6>
+                <h6 th:text="${item.size}">size : M</h6>
+                <h6 th:text="|${{item.price}}₩|">price : $500</h6>
+              </div>
             </div>
-          </div>
-          <div class="item col">
-            <img src="/img/blank-1976334_1280.png" alt="" />
-            <div style="text-align: center">
-              <h5>gray-product</h5>
-              <h6>color : gray</h6>
-              <h6>size : M</h6>
-              <h6>price : $500</h6>
-            </div>
-          </div>
-          <div class="item col">
-            <img
-              src="/img/girl-woman-female-standing-fashion-clothing-1218703-pxhere.com.jpg"
-              alt=""
-            />
-            <div style="text-align: center">
-              <h5>gray-product</h5>
-              <h6>color : gray</h6>
-              <h6>size : M</h6>
-              <h6>price : $500</h6>
-            </div>
-          </div>
+          </th:block>
         </div>
       </section>
     </div>
     <script>
-      var filter = document.getElementById("filter");
       var subcategory = document.getElementById("subcategory_container");
-      var originHref = location.href;
-
-      window.addEventListener("resize", () => {
-        if (window.innerWidth < 1400) {
-          filter.style.top = "0px";
-        }
-      });
-
-      window.addEventListener("scroll", () => {
-        if (
-          window.pageYOffset > 1700 ||
-          window.innerWidth < 1400 ||
-          filter.style.height < 1600
-        ) {
-          filter.style.top = "0px";
-        } else {
-          filter.style.top = window.pageYOffset + "px";
-        }
-      });
 
       window.addEventListener("load", () => {
         const paramMap = new URLSearchParams(location.search);
         for (const param of paramMap) {
-          console.log(param[0]);
-          console.log(param[1]);
-
           if (param[0] === "subcategory") {
             const subcategory = document.getElementById(
               "subcategory_" + param[1]

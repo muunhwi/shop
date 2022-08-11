@@ -3,6 +3,7 @@ package com.pofol.shop.domain.dto;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.NumberFormat;
 
 import java.util.List;
 
@@ -11,7 +12,8 @@ import java.util.List;
 public class ItemDTO {
 
     @QueryProjection
-    public ItemDTO(String name, int price, int quantity, String size, String color, Double reviewGrade, int salesRate, String subCategoryName, String categoryName) {
+    public ItemDTO(Long id, String name, int price, int quantity, String size, String color, Double reviewGrade, int salesRate, String subCategoryName, String categoryName) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
@@ -23,7 +25,9 @@ public class ItemDTO {
         this.category = categoryName;
     }
 
+    private Long id;
     private String name;
+    @NumberFormat(pattern = "###,###")
     private int price;
     private int quantity;
     private String size;

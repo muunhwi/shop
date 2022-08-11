@@ -70,7 +70,10 @@
               >
                 <option selected>카테고리 선택</option>
                 <th:block th:each="category : ${categories}">
-                  <option th:value="${category}" th:text="${category}"></option>
+                  <option
+                    th:value="${category.name}"
+                    th:text="${category.name}"
+                  ></option>
                 </th:block>
               </select>
             </div>
@@ -185,6 +188,7 @@
           $("#subcategory").html("");
 
           for (let subcategory of res) {
+            console.log(subcategory);
             $("#subcategory").append(`
                 <div class="form-check mt-2">
                 <input
@@ -192,11 +196,11 @@
                   type="radio"
                   name="subCategory"
                   id=${subcategory.id}
-                  value=${subcategory}
+                  value=${subcategory.name}
                   onclick="radioEvent(this)"
                 >
-                <label class="form-check-label" for=${subcategory}>
-                  ${subcategory}
+                <label class="form-check-label" for=${subcategory.id}>
+                  ${subcategory.name}
                 </label>
                 </div>`);
           }
@@ -209,8 +213,9 @@
     function radioEvent(e) {
       const categoryValue = category.options[category.selectedIndex].value;
       const subCategoryValue = e.id;
+      console.log(subCategoryValue);
       $.ajax({
-        url: "/sizes?" + "&subcategory=" + subCategoryValue,
+        url: "/sizes?" + "&subcategoryId=" + subCategoryValue,
         async: true,
         type: "GET",
         success: function (res) {

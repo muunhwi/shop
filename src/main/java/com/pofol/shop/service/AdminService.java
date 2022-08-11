@@ -45,18 +45,18 @@ public class AdminService {
     private void saveImage(Item item, MultipartFile image,Boolean isMain) {
         String extension = getExtension(image);
         String serveSavedName = getServeSavedName(extension);
-        String location = createFolder();
+        String[] location = createFolder();
 
         ItemImage itemImage = ItemImage.builder()
                 .isMainImg(isMain)
                 .userCustomName(image.getOriginalFilename())
                 .serverSavedName(serveSavedName)
-                .location(location)
+                .location(location[1])
                 .item(item)
                 .build();
 
         try {
-            image.transferTo(Paths.get(location + separator + serveSavedName));
+            image.transferTo(Paths.get(location[0] + separator + serveSavedName));
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -72,8 +72,7 @@ public class AdminService {
     private String getExtension(MultipartFile image) {
         return image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));
     }
-
-    private String createFolder() {
+    private String[] createFolder() {
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
         int day = LocalDate.now().getDayOfMonth();
@@ -87,7 +86,7 @@ public class AdminService {
                 e.getMessage();
             }
         }
-        return src;
+        return new String[]{folder.getPath(), src};
     }
 
 

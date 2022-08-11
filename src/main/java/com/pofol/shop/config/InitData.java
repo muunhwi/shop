@@ -107,49 +107,56 @@ public class InitData {
             int index = randomBox(8);
             int categoryIndex = randomBox(30);
             double grade = Math.round(((Math.random() * 5) * 10)) / 10.0;
-            String size = null;
+            String[] size = null;
 
             String subCategoryName = AllCategory[categoryIndex];
             Subcategory subCategory = subCategoryRepository.findByName(subCategoryName);
             String substring = UUID.randomUUID().toString().substring(0, 10);
-
             Subcategory findSubcategory = subCategoryRepository.findSubCategoryBySubCategoryName(subCategoryName);
             String category = findSubcategory.getCategory().getName();
+            int num = 0;
 
             if(category.equals("아우터") || category.equals("셔츠") || category.equals("스포츠")) {
-                size = BASE_SIZE[baseSizeIndex];
+                size = BASE_SIZE;
+                num = 3;
             } else if(category.equals("팬츠")) {
-                size = PANTS_SIZE[pantsShoesSizeIndex];
+                size = PANTS_SIZE;
+                num = 4;
             } else if(category.equals("신발")) {
-                size = SHOES_SIZE[pantsShoesSizeIndex];
+                size = SHOES_SIZE;
+                num = 4;
             } else {
                 if(subCategoryName.equals("반지")) {
-                    size = RING_SIZE[otherSizeIndex];
+                    size = RING_SIZE;
+                    num = 2;
                 } else if(subCategoryName.equals("모자")){
-                    size = HAT_SIZE[otherSizeIndex];
+                    size = HAT_SIZE;
+                    num = 2;
                 } else {
-                    size = ACCESSORY_SIZE[otherSizeIndex];
+                    size = ACCESSORY_SIZE;
+                    num = 2;
                 }
             }
 
-            Color color = colorRepository.findByName(COLOR[index]);
-            Size sizeEntity = sizeRepository.findByName(size);
+            for(int j = 0; j <= num; j++) {
+                Color color = colorRepository.findByName(COLOR[j]);
+                Size sizeEntity = sizeRepository.findByName(size[j]);
+                List<ItemImage> images = getSubImage();
 
-            List<ItemImage> images = getSubImage();
-
-            Item item = Item.builder()
-                    .name(substring)
-                    .price(10000*(index+1))
-                    .size(sizeEntity)
-                    .color(color)
-                    .salesRate(baseSizeIndex * index)
-                    .reviewGrade(grade)
-                    .quantity(index)
-                    .subCategory(subCategory)
-                    .itemImagesList(images)
-                    .build();
-            images.stream().forEach(image -> image.setItem(item));
-            itemRepository.save(item);
+                Item item = Item.builder()
+                        .name(substring)
+                        .price(10000*(index+1))
+                        .size(sizeEntity)
+                        .color(color)
+                        .salesRate(baseSizeIndex * index)
+                        .reviewGrade(grade)
+                        .quantity(index)
+                        .subCategory(subCategory)
+                        .itemImagesList(images)
+                        .build();
+                images.stream().forEach(image -> image.setItem(item));
+                itemRepository.save(item);
+            }
         });
 
     }

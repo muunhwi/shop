@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ItemFilterRepositoryTest {
 
     @Autowired
-    ItemFilterRepository itemFilterRepository;
+    ItemListRepository itemFilterRepository;
     @Autowired
     SizeRepository sizeRepository;
     @Autowired
@@ -79,37 +79,7 @@ class ItemFilterRepositoryTest {
         }
     }
 
-    @Test
-    @DisplayName("조건 max price=50000 추가 ")
-    public void filterQuery_4() throws Exception {
-        ItemCondition condition = new ItemCondition();
-        condition.setMaxPrice(50000);
-        Pageable pageable = PageRequest.of(0, 10);
 
-        Page<ItemDTO> list = itemFilterRepository.getFilterItemList(condition, pageable);
-
-        List<ItemDTO> content = list.getContent();
-        for (ItemDTO itemDTO : content) {
-            assertThat(itemDTO.getPrice()).isLessThanOrEqualTo(50000);
-        }
-    }
-
-    @Test
-    @DisplayName("조건 min price = 20000 max price = 50000 추가 ")
-    public void filterQuery_5() throws Exception {
-        ItemCondition condition = new ItemCondition();
-        condition.setMinPrice(20000);
-        condition.setMaxPrice(50000);
-        Pageable pageable = PageRequest.of(0, 10);
-
-        Page<ItemDTO> list = itemFilterRepository.getFilterItemList(condition, pageable);
-
-        List<ItemDTO> content = list.getContent();
-        for (ItemDTO itemDTO : content) {
-            assertThat(itemDTO.getPrice()).isGreaterThanOrEqualTo(20000);
-            assertThat(itemDTO.getPrice()).isLessThanOrEqualTo(50000);
-        }
-    }
 
     @Test
     @DisplayName("가장 높은 가격으로 정렬")

@@ -3,11 +3,8 @@ package com.pofol.shop.repository.filter;
 
 import com.pofol.shop.domain.Item;
 import com.pofol.shop.domain.ItemImage;
-import com.pofol.shop.domain.dto.ItemCondition;
-import com.pofol.shop.domain.dto.ItemDTO;
+import com.pofol.shop.domain.dto.*;
 
-import com.pofol.shop.domain.dto.ItemMainImageDTO;
-import com.pofol.shop.domain.dto.QItemDTO;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -35,7 +32,7 @@ import static com.pofol.shop.domain.QSubcategory.subcategory;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class ItemFilterRepository {
+public class ItemListRepository {
 
     private final JPAQueryFactory queryFactory;
 
@@ -54,8 +51,7 @@ public class ItemFilterRepository {
                         categoryEq(condition.getCategory()),
                         subCategoryEq(condition.getSubcategory()),
                         colorEq(condition.getColor()),
-                        sizeEq(condition.getSize()),
-                        priceRange(condition.getMinPrice(), condition.getMaxPrice())
+                        sizeEq(condition.getSize())
                 ).orderBy(
                         orders
                 ).offset(pageable.getOffset()
@@ -64,6 +60,7 @@ public class ItemFilterRepository {
 
         List<ItemDTO> list = items.stream().map(i -> {
             ItemDTO itemDTO = new ItemDTO(
+                    i.getId(),
                     i.getName(),
                     i.getPrice(),
                     i.getQuantity(),
@@ -88,14 +85,43 @@ public class ItemFilterRepository {
                 .innerJoin(item.subCategory, subcategory)
                 .innerJoin(subcategory.category, category)
                 .where(
+                        categoryEq(condition.getCategory()),
+                        subCategoryEq(condition.getSubcategory()),
                         colorEq(condition.getColor()),
-                        sizeEq(condition.getSize()),
-                        priceRange(condition.getMinPrice(), condition.getMaxPrice())
+                        sizeEq(condition.getSize())
                 );
 
         return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchOne);
 
+    }
 
+    @Transactional(readOnly = true)
+    public List<ItemTop3DTO> findTop3BySalesRate() {
+
+        List<Item> list = queryFactory.selectFrom(item)
+                .orderBy(item.salesRate.desc())
+                .limit(3L).fetch();
+
+        List<ItemTop3DTO> top3 = list.stream().map(i -> {
+                    ItemTop3DTO itemTop3DTO =
+                            new ItemTop3DTO(
+                                    i.getId(),
+                                    i.getName(),
+                                    i.getPrice(),
+                                    i.getSize().getName(),
+                                    i.getColor().getName());
+                    Optional<ItemMainImageDTO> imageDTO = i.getItemImagesList()
+                            .stream()
+                            .filter(ItemImage::getIsMainImg)
+                            .map(img -> new ItemMainImageDTO(img.getLocation(), img.getServerSavedName()))
+                            .findFirst();
+                    itemTop3DTO.setMainImage(imageDTO.orElseThrow(() -> {
+                        throw new EntityNotFoundException();
+                    }));
+                    return itemTop3DTO;
+                }).collect(Collectors.toList());
+
+        return top3;
     }
 
 
@@ -157,15 +183,6 @@ public class ItemFilterRepository {
         return null;
     }
 
-    private BooleanExpression priceRange(Integer min, Integer max) {
-
-        if(min == null && max != null) {
-            return item.price.goe(0).and(item.price.loe(max));
-        } else if( min != null && max != null) {
-            return item.price.goe(min).and(item.price.loe(max));
-        }
-        return null;
-    }
 
     private OrderSpecifier<Integer> highestPrice(Boolean isTrue) {
         if(isTrue != null) {
