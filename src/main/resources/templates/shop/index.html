@@ -333,14 +333,14 @@
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  th:if="${auth == null}"
+                  th:if="${member == null}"
                   th:href="@{/member/login}"
                   th:text="로그인"
                   >login</a
                 >
                 <a
                   class="nav-link"
-                  th:if="${auth != null}"
+                  th:if="${member != null}"
                   th:href="@{/logout}"
                   th:text="로그아웃"
                   >logout</a
@@ -434,8 +434,7 @@
             />
             <div style="text-align: center">
               <h5 th:text="${item.name}">gray-product</h5>
-              <h6 th:text="${item.color}">color : gray</h6>
-              <h6 th:text="${item.size}">size : M</h6>
+
               <h6 th:text="|${{item.price}}₩|">price : $500</h6>
             </div>
           </div>
@@ -577,15 +576,19 @@
   <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/node_modules/parsleyjs/dist/parsley.min.js"></script>
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-  <script>
+  <script th:inline="javascript">
     let path = window.location.pathname;
-    console.log(path);
+    const member = [[${member}]]
+    console.log(member);
     var myModal = new bootstrap.Modal(document.getElementById("modalSignin"), {
       backdrop: "static",
     });
 
     if (path.startsWith("/member/login")) {
-      myModal.show();
+
+      if(member == null) {
+        myModal.show();
+      }
     }
 
     if (path.startsWith("/member/join")) {

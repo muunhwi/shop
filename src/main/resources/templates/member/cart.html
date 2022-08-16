@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{/layout/base :: layout(~{::title}, ~{::section}, ~{::script}, ~{::style})}"
+>
+  <head>
+    <style>
+      .countdown {
+        width: 100px;
+        height: 25px;
+      }
+      .red {
+        color: red;
+      }
+      @media screen and (max-width: 767px) {
+        .itemList {
+          display: flex;
+          flex-direction: column;
+        }
+        .header_name {
+          text-align: center;
+        }
+        h5 {
+          font-size: 1.5rem;
+        }
+        a:hover {
+          color: white;
+        }
+      }
+    </style>
+    <title>Shop</title>
+  </head>
+  <body>
+    <!-- BASKET List -->
+    <section>
+      <div class="row g-4 mt-2">
+        <div class="col-md-8">
+          <div class="p-4 border rounded bg-light">
+            <h4 class="header_name">CART-ITEM</h4>
+            <th:block th:each="cart : ${carts}">
+              <div
+                class="itemList col mt-3 d-md-flex align-items-center justify-content-sm-between"
+              >
+                <img
+                  th:src="|${cart.mainImage.location}/${cart.mainImage.serverSavedName}|"
+                  alt=""
+                  width="120px"
+                />
+                <div class="px-5 d-flex flex-column align-items-center">
+                  <h5 th:text="${cart.name}">gray-product</h5>
+                  <h6 th:text="${cart.color}">color : gray</h6>
+                  <h6 th:text="${cart.size}">size : M</h6>
+                  <h6 th:id="${cart.price}" th:text="|${{cart.price}}₩|">
+                    price : $500
+                  </h6>
+                </div>
+                <div>
+                  <input
+                    id="quantity"
+                    min="0"
+                    th:name="${cart.id}"
+                    th:value="${cart.count}"
+                    type="number"
+                    class="form-control form-control-sm"
+                    onchange="quantityChange(this)"
+                  />
+                </div>
+                <div class="mt-2">
+                  <button
+                    class="btn btn-primary"
+                    th:id="${cart.id}"
+                    onclick="deleteBtn(this)"
+                  >
+                    delete
+                  </button>
+                </div>
+              </div>
+            </th:block>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 border rounded bg-light">
+            <h4 class="header_name">Summary</h4>
+            <div class="d-flex flex-column">
+              <div class="d-flex justify-content-between">
+                <h5>Products</h5>
+                <h6 id="totalPrice">$54.32</h6>
+              </div>
+              <div class="d-flex justify-content-between">
+                <h5>Discount</h5>
+                <h6 class="red">-$23.32</h6>
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between">
+                <h5>Total Amount</h5>
+                <h6>$22</h6>
+              </div>
+              <button type="button" class="btn btn-primary">
+                <a class="list-group-item" th:href="@{/member/checkout}"
+                  >check out</a
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+  <script th:inline="javascript">
+    var carts = [[${carts}]]
+
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+
+    function priceToString(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+ "₩";
+    }
+
+    window.addEventListener("load", () => {
+      console.log(carts);
+      var totalPrice = 0;
+      for(var i = 0; i < carts.length; i++) {
+        totalPrice += carts[i].price * carts[i].count;
+      }
+      $("#totalPrice").html(priceToString(totalPrice));
+     })
+
+    function deleteBtn(e) {
+      var target = e.id;
+
+      $.ajax({
+        type: "get",
+        async: true,
+        url: "/member/cart/remove?id=" + target,
+        processData: false,
+        contentType: false,
+        cache: false,
+        timeout: 600000,
+        success: function (res) {
+          document.location.reload();
+        },
+        error: function (res, err) {
+          console.log(err);
+        },
+      });
+    }
+    function quantityChange(e) {
+
+      var formData = new FormData();
+        formData.append("id", e.name);
+        formData.append("count", e.value);
+
+      $.ajax({
+        type: "POST",
+        async: true,
+        url: "/member/cart",
+        enctype: "application/www-form-urlencoded",
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(header, token);
+        },
+        processData: false,
+        contentType: false,
+        data: formData,
+        cache: false,
+        timeout: 600000,
+        success: function (res) {
+          document.location.reload();
+        },
+        error: function (res, err) {
+          console.log(err);
+        },
+      });
+    }
+  </script>
+</html>

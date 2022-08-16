@@ -2,6 +2,7 @@ package com.pofol.shop.config;
 
 import com.pofol.shop.domain.*;
 import com.pofol.shop.domain.sub.Address;
+import com.pofol.shop.domain.sub.DeliveryStatus;
 import com.pofol.shop.repository.*;
 import com.pofol.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,8 @@ public class InitData {
     private final SubcategoryRepository subCategoryRepository;
     private final SizeRepository sizeRepository;
     private final ColorRepository colorRepository;
+    private final GoodsRepository goodsRepository;
+    private final DeliveryRepository deliveryRepository;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
@@ -103,10 +106,9 @@ public class InitData {
         LongStream.rangeClosed(1,100).forEach(i -> {
             int baseSizeIndex = randomBox(4);
             int pantsShoesSizeIndex = randomBox(5);
-            int otherSizeIndex = randomBox(3);
+            int index_3 = randomBox(3);
             int index = randomBox(8);
             int categoryIndex = randomBox(30);
-            double grade = Math.round(((Math.random() * 5) * 10)) / 10.0;
             String[] size = null;
 
             String subCategoryName = AllCategory[categoryIndex];
@@ -138,25 +140,31 @@ public class InitData {
                 }
             }
 
-            for(int j = 0; j <= num; j++) {
-                Color color = colorRepository.findByName(COLOR[j]);
-                Size sizeEntity = sizeRepository.findByName(size[j]);
-                List<ItemImage> images = getSubImage();
+            List<ItemImage> images = getSubImage();
+            Item item = Item.builder()
+                    .name(substring)
+                    .price(10000*(index+1))
+                    .salesRate(baseSizeIndex * index)
+                    .subCategory(subCategory)
+                    .itemImagesList(images)
+                    .build();
+            images.stream().forEach(image -> image.setItem(item));
+            itemRepository.save(item);
 
-                Item item = Item.builder()
-                        .name(substring)
-                        .price(10000*(index+1))
-                        .size(sizeEntity)
+            for(int j = 0; j <=4; j++) {
+                Color color = colorRepository.findByName(COLOR[j]);
+                if(j > num) return;
+                Size sizeEntity = sizeRepository.findByName(size[randomBox(num)]);
+                Goods goods = Goods.builder()
                         .color(color)
-                        .salesRate(baseSizeIndex * index)
-                        .reviewGrade(grade)
-                        .quantity(index)
-                        .subCategory(subCategory)
-                        .itemImagesList(images)
+                        .size(sizeEntity)
+                        .quantity(index * 3)
+                        .isDeleted(false)
+                        .item(item)
                         .build();
-                images.stream().forEach(image -> image.setItem(item));
-                itemRepository.save(item);
+                goodsRepository.save(goods);
             }
+
         });
 
     }

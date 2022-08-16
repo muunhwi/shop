@@ -3,7 +3,7 @@ package com.pofol.shop.controller;
 import com.pofol.shop.domain.Color;
 import com.pofol.shop.domain.Item;
 import com.pofol.shop.domain.Size;
-import com.pofol.shop.domain.dto.ItemFormDTO;
+import com.pofol.shop.domain.dto.item.ItemFormDTO;
 import com.pofol.shop.domain.dto.SubcategoryDTO;
 import com.pofol.shop.repository.ColorRepository;
 import com.pofol.shop.repository.SubcategoryRepository;
@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.pofol.shop.domain.sub.StaticContainer.CATEGORY;
 
 @Slf4j
 @Controller

@@ -1,4 +1,4 @@
-package com.pofol.shop.domain.dto;
+package com.pofol.shop.domain.dto.member;
 
 import com.pofol.shop.domain.sub.Address;
 import lombok.Data;

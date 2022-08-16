@@ -1,25 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html
+  xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{/layout/base :: layout(~{::title}, ~{::section}, ~{::script}, ~{::style})}"
+>
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
-      crossorigin="anonymous"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200&display=swap"
-      rel="stylesheet"
-    />
-
     <style>
-      body {
-        font-family: "Noto Serif KR", serif;
-      }
       .countdown {
         width: 100px;
         height: 25px;
@@ -44,352 +29,284 @@
       }
     </style>
 
-    <title>Bootstrap demo</title>
+    <title>SHOP</title>
   </head>
   <body>
-    <div class="container-xl">
-      <!-- NAVIGATION BAR -->
-      <nav
-        class="navbar navbar-expand-lg navbar-light bg-light shadow-sm border"
-      >
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">
-            <img src="/img/1841331_1_500.jpg" alt="" width="30" height="24" />
-          </a>
-          <a class="navbar-brand" href="#">SHOP</a>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div
-            class="collapse navbar-collapse justify-content-end"
-            id="navbarNav"
-          >
-            <ul class="nav">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#"
-                  >Active</a
-                >
-              </li>
-              <li class="nav-item"></li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link disabled">Disabled</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-
-      <!-- ORDER INFO -->
+    <!-- ORDER INFO -->
+    <section>
       <h3 class="mt-3">Order Info</h3>
       <hr />
-      <form class="mt-3 border p-3">
-        <!-- 2 column grid layout with text inputs for the first and last names -->
-        <div class="row mb-4">
-          <div class="form-outline">
-            <input
-              type="text"
-              id="form6Example1"
-              class="form-control"
-              style="width: 250px"
-            />
-            <label class="form-label" for="form6Example1">name</label>
-          </div>
+      <form
+        id="orderCart"
+        th:action="@{/member/checkout}"
+        th:method="post"
+        th:object="${orderCart}"
+        data-parsley-validate
+      >
+        <div class="form-floating mb-3">
+          <input
+            type="email"
+            class="form-control rounded-4"
+            th:field="*{email}"
+            data-parsley-error-message="이메일 형식이 유효하지 않습니다."
+            required=""
+            placeholder="name@example.com"
+          />
+          <label for="email">Email</label>
         </div>
-
-        <!-- Text input -->
-        <div class="form-outline mb-4">
-          <div class="input-group mb-3">
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              id="button-addon1"
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control rounded-4"
+            th:field="*{phoneNumber}"
+            required=""
+            pattern="/01[016789][^0][0-9]{2,3}[0-9]{3,4}/"
+            data-parsley-error-message="휴대폰 번호를 다시 입력해주세요"
+            placeholder="phone"
+          />
+          <label for="phoneNumber">phone</label>
+        </div>
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <span
+              class="border px-3 p-1 add-experience"
+              style="cursor: pointer"
+              onclick="address()"
+              >Edit Address</span
             >
-              Button
-            </button>
-            <input
-              type="text"
-              class="form-control"
-              placeholder=""
-              aria-label="Example text with button addon"
-              aria-describedby="button-addon1"
-            />
           </div>
-          <label class="form-label" for="form6Example4">Address</label>
         </div>
-
-        <!-- Email input -->
-        <div class="mb-4">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Username"
-              aria-label="Username"
-            />
-            <span class="input-group-text">@</span>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Server"
-              aria-label="Server"
-            />
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control rounded-4"
+            th:field="*{zoneCode}"
+            required=""
+            data-parsley-length="[5, 5]"
+            data-parsley-group="block2"
+            data-parsley-errors-container="#error2"
+            data-parsley-errors-messages-disabled
+            placeholder="우편번호"
+          />
+          <label for="addressId">우편번호</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control rounded-4"
+            th:field="*{baseAddress}"
+            required=""
+            data-parsley-errors-container="#error2"
+            data-parsley-errors-messages-disabled
+            data-parsley-group="block2"
+            placeholder="기본 주소"
+          />
+          <label for="baseAddress">기본 주소</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control rounded-4"
+            data-parsley-group="block2"
+            th:field="*{extraAddress}"
+            data-parsley-errors-container="#error2"
+            data-parsley-errors-messages-disabled
+            placeholder="참고항목"
+          />
+          <label for="extraAddress">참고항목</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input
+            type="text"
+            class="form-control rounded-4"
+            th:field="*{detailAddress}"
+            required=""
+            data-parsley-errors-container="#error2"
+            data-parsley-errors-messages-disabled
+            data-parsley-group="block2"
+            placeholder="상세 주소"
+          />
+          <label for="detailAddress">상세 주소</label>
+        </div>
+        <div th:if="${#fields.hasGlobalErrors()}">
+          <p
+            style="color: red"
+            th:each="err : ${#fields.globalErrors()}"
+            th:text="${err}"
+          ></p>
+        </div>
+        <div id="error2" class="mb-3" style="color: red"></div>
+        <div class="row g-4 mt-2">
+          <div class="col-md-8">
+            <div class="p-4 border rounded bg-light">
+              <h4 class="header_name">CART-ITEM</h4>
+              <th:block th:each="cart : ${orderCart.carts}">
+                <div
+                  class="itemList col mt-3 d-md-flex align-items-center justify-content-sm-between"
+                >
+                  <img
+                    th:src="|${cart.mainImage.location}/${cart.mainImage.serverSavedName}|"
+                    alt=""
+                    width="120px"
+                  />
+                  <div class="px-5 d-flex flex-column align-items-center">
+                    <h5 th:text="${cart.name}">gray-product</h5>
+                    <h6 th:text="${cart.color}">color : gray</h6>
+                    <h6 th:text="${cart.size}">size : M</h6>
+                    <h6 th:id="${cart.price}" th:text="|${{cart.price}}₩|">
+                      price : $500
+                    </h6>
+                  </div>
+                  <div>
+                    수량
+                    <input
+                      id="quantity"
+                      min="0"
+                      th:name="${cart.id}"
+                      th:value="${cart.count}"
+                      type="number"
+                      class="form-control form-control-sm"
+                      disabled
+                    />
+                  </div>
+                </div>
+              </th:block>
+            </div>
           </div>
-          <label class="form-label" for="form6Example5">Email</label>
-        </div>
-
-        <!-- Number input -->
-        <div class="form-outline mb-4">
-          <input
-            type="phone"
-            id="form6Example6"
-            class="form-control phone"
-            style="width: 53px"
-          />
-          -
-          <input
-            type="phone"
-            id="form6Example6"
-            class="form-control phone"
-            style="width: 65px"
-          />
-          -
-          <input
-            type="phone"
-            id="form6Example6"
-            class="form-control phone"
-            style="width: 65px"
-          />
-          <label class="form-label" for="form6Example6" style="display: block"
-            >Phone</label
-          >
-        </div>
-
-        <!-- Message input -->
-        <div class="form-outline mb-4">
-          <textarea class="form-control" id="form6Example7" rows="4"></textarea>
-          <label class="form-label" for="form6Example7"
-            >Additional information</label
-          >
+          <div class="col-md-4">
+            <div class="p-3 border rounded bg-light">
+              <h4 class="header_name">Summary</h4>
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-between">
+                  <h5>Products</h5>
+                  <h6 id="totalPrice">$54.32</h6>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <h5>Discount</h5>
+                  <h6 class="red">-$23.32</h6>
+                </div>
+                <hr />
+                <div class="d-flex justify-content-between">
+                  <h5>Total Amount</h5>
+                  <h6>$22</h6>
+                </div>
+                <button type="submit" class="btn btn-primary">check out</button>
+              </div>
+            </div>
+          </div>
         </div>
       </form>
-
       <!-- BASKET LIST -->
-      <div class="row g-4 mt-2">
-        <div class="col-md-8">
-          <div class="p-4 border rounded bg-light">
-            <h4 class="header_name">CART-ITEM</h4>
-            <div
-              class="itemList col mt-3 d-md-flex align-items-center justify-content-sm-between"
-            >
-              <img src="/img/1841331_1_500.jpg" alt="" width="120px" />
-              <div class="px-5 d-flex flex-column align-items-center">
-                <h5>gray-product</h5>
-                <h6>color : gray</h6>
-                <h6>size : M</h6>
-                <h6>price : $500</h6>
-              </div>
-              <div class="countdown d-flex">
-                <button
-                  class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                >
-                  <i class="fas fa-minus">+</i>
-                </button>
-                <input
-                  id="form1"
-                  min="0"
-                  name="quantity"
-                  value="1"
-                  type="number"
-                  class="form-control form-control-sm"
-                />
-                <button
-                  class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                >
-                  <i class="fas fa-plus">-</i>
-                </button>
-              </div>
-              <div class="mt-2">
-                <h6>delete</h6>
-              </div>
-            </div>
-
-            <hr />
-
-            <div
-              class="itemList col mt-3 d-md-flex align-items-center justify-content-sm-between"
-            >
-              <img
-                src="/img/girl-woman-female-standing-fashion-clothing-1218703-pxhere.com.jpg"
-                alt=""
-                width="120px"
-              />
-              <div class="px-5 d-flex flex-column align-items-center">
-                <h5>gray-product</h5>
-                <h6>color : gray</h6>
-                <h6>size : M</h6>
-                <h6>price : $500</h6>
-              </div>
-              <div class="countdown d-flex">
-                <button
-                  class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                >
-                  <i class="fas fa-minus">+</i>
-                </button>
-                <input
-                  id="form1"
-                  min="0"
-                  name="quantity"
-                  value="1"
-                  type="number"
-                  class="form-control form-control-sm"
-                />
-                <button
-                  class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                >
-                  <i class="fas fa-plus">-</i>
-                </button>
-              </div>
-              <div class="mt-2">
-                <h6>delete</h6>
-              </div>
-            </div>
-
-            <hr />
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="p-3 border rounded bg-light">
-            <h4 class="header_name">Summary</h4>
-            <div class="d-flex flex-column">
-              <div class="d-flex justify-content-between">
-                <h5>Products</h5>
-                <h6>$54.32</h6>
-              </div>
-              <div class="d-flex justify-content-between">
-                <h5>Discount</h5>
-                <h6 class="red">-$23.32</h6>
-              </div>
-              <hr />
-              <div class="d-flex justify-content-between">
-                <h5>COUPON</h5>
-                <select
-                  class="form-select"
-                  aria-label="Default select example"
-                  style="width: 120px"
-                >
-                  <option selected>Coupon</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </select>
-              </div>
-
-              <div class="d-flex justify-content-between mt-3">
-                <h5>Total Amount</h5>
-                <h6>$22</h6>
-              </div>
-              <button type="button" class="btn btn-primary">check out</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- FOOTER -->
-      <div class="container">
-        <footer class="row row-cols-5 py-5 my-5 border-top">
-          <div class="col">
-            <a
-              href="/"
-              class="d-flex align-items-center mb-3 link-dark text-decoration-none"
-            >
-              <svg class="bi me-2" width="40" height="32">
-                <use xlink:href="#bootstrap" />
-              </svg>
-            </a>
-            <p class="text-muted">&copy; 2022</p>
-          </div>
-
-          <div class="col"></div>
-
-          <div class="col">
-            <h5>Section</h5>
-            <ul class="nav flex-column">
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Home</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Features</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">About</a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="col">
-            <h5>Section</h5>
-            <ul class="nav flex-column">
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Home</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Features</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">About</a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="col">
-            <h5>Section</h5>
-            <ul class="nav flex-column">
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Home</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Features</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">Pricing</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">FAQs</a>
-              </li>
-              <li class="nav-item mb-2">
-                <a href="#" class="nav-link p-0 text-muted">About</a>
-              </li>
-            </ul>
-          </div>
-        </footer>
-      </div>
-    </div>
+    </section>
   </body>
+  <script th:inline="javascript">
+    var carts = [[${orderCart.carts}]]
+
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+
+    function priceToString(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')+ "₩";
+    }
+
+    window.addEventListener("load", () => {
+      var totalPrice = 0;
+      for(var i = 0; i < carts.length; i++) {
+        totalPrice += carts[i].price * carts[i].count;
+      }
+      $("#totalPrice").html(priceToString(totalPrice));
+     })
+
+    function deleteBtn(e) {
+      var target = e.id;
+
+      $.ajax({
+        type: "get",
+        async: true,
+        url: "/member/cart/remove?id=" + target,
+        processData: false,
+        contentType: false,
+        cache: false,
+        timeout: 600000,
+        success: function (res) {
+          document.location.reload();
+        },
+        error: function (res, err) {
+          console.log(err);
+        },
+      });
+    }
+    function quantityChange(e) {
+
+      var formData = new FormData();
+        formData.append("id", e.name);
+        formData.append("count", e.value);
+
+      $.ajax({
+        type: "POST",
+        async: true,
+        url: "/member/cart",
+        enctype: "application/www-form-urlencoded",
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(header, token);
+        },
+        processData: false,
+        contentType: false,
+        data: formData,
+        cache: false,
+        timeout: 600000,
+        success: function (res) {
+          document.location.reload();
+        },
+        error: function (res, err) {
+          console.log(err);
+        },
+      });
+    }
+    function address() {
+      new daum.Postcode({
+        oncomplete: function (data) {
+          var addr = ""; // 주소 변수
+          var extraAddr = ""; // 참고항목 변수
+
+          //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+          if (data.userSelectedType === "R") {
+            // 사용자가 도로명 주소를 선택했을 경우
+            addr = data.roadAddress;
+          } else {
+            // 사용자가 지번 주소를 선택했을 경우(J)
+            addr = data.jibunAddress;
+          }
+
+          // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+          if (data.userSelectedType === "R") {
+            // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+            // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+            if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
+              extraAddr += data.bname;
+            }
+            // 건물명이 있고, 공동주택일 경우 추가한다.
+            if (data.buildingName !== "" && data.apartment === "Y") {
+              extraAddr +=
+                extraAddr !== "" ? ", " + data.buildingName : data.buildingName;
+            }
+            // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+            if (extraAddr !== "") {
+              extraAddr = " (" + extraAddr + ")";
+            }
+            // 조합된 참고항목을 해당 필드에 넣는다.
+            document.getElementById("address.extraAddress").value = extraAddr;
+          } else {
+            document.getElementById("address.extraAddress").value = "";
+          }
+
+          // 우편번호와 주소 정보를 해당 필드에 넣는다.
+          document.getElementById("address.zoneCode").value = data.zonecode;
+          document.getElementById("address.baseAddress").value = addr;
+          // 커서를 상세주소 필드로 이동한다.
+          document.getElementById("address.detailAddress").focus();
+        },
+      }).open();
+    }
+  </script>
 </html>

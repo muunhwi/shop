@@ -1,4 +1,4 @@
-package com.pofol.shop.domain.dto;
+package com.pofol.shop.domain.dto.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

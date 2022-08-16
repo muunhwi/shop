@@ -1,7 +1,14 @@
 package com.pofol.shop.controller;
 
-import com.pofol.shop.domain.dto.*;
 import com.pofol.shop.domain.Member;
+import com.pofol.shop.domain.dto.comment.CommentDTO;
+import com.pofol.shop.domain.dto.item.ItemCondition;
+import com.pofol.shop.domain.dto.item.ItemDTO;
+import com.pofol.shop.domain.dto.item.ItemFilterDTO;
+import com.pofol.shop.domain.dto.item.ItemOverviewDTO;
+import com.pofol.shop.domain.dto.member.JoinMemberForm;
+import com.pofol.shop.domain.dto.member.LoginForm;
+import com.pofol.shop.service.CommentService;
 import com.pofol.shop.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -22,12 +30,13 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final CommentService commentService;
 
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal Member member) {
 
         if(member != null) {
-            model.addAttribute("auth", member.getEmail());
+            model.addAttribute("member", member.getEmail());
         }
 
         model.addAttribute("join", new JoinMemberForm());
@@ -52,7 +61,7 @@ public class ItemController {
         }
 
         Page<ItemDTO> list = itemService.getFilterItemList(condition,pageable);
-        List<ItemTop3DTO> top3 = itemService.findTop3BySalesRate();
+        List<ItemDTO> top3 = itemService.findTop3BySalesRate();
 
         model.addAttribute("list", list);
         model.addAttribute("filter", filter);
@@ -62,11 +71,13 @@ public class ItemController {
         return "/shop/list";
     }
 
-    @GetMapping("/shop/item")
-    public String getItemOverview() {
+    @GetMapping("/shop/item/{itemId}")
+    public String getItemOverview(@PathVariable("itemId") Long id, Model model) {
+        ItemOverviewDTO itemOverview = itemService.getItemOverview(id);
+        List<CommentDTO> comments = commentService.getComments(id);
+        model.addAttribute("overview", itemOverview);
+        model.addAttribute("comments", comments);
         return "shop/overview";
     }
-
-
 
 }

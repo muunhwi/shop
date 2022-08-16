@@ -1,12 +1,16 @@
 package com.pofol.shop.controller;
 
-import com.pofol.shop.domain.dto.LoginForm;
+import com.pofol.shop.domain.dto.CartDTO;
+import com.pofol.shop.domain.dto.OrderCartDTO;
+import com.pofol.shop.domain.dto.checkoutDTO;
+import com.pofol.shop.domain.dto.member.LoginForm;
 import com.pofol.shop.domain.Member;
-import com.pofol.shop.domain.dto.JoinMemberForm;
+import com.pofol.shop.domain.dto.member.JoinMemberForm;
 import com.pofol.shop.domain.sub.Address;
 import com.pofol.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -29,9 +34,12 @@ public class MemberController {
 
 
     @GetMapping("/member/login")
-    public String getLoginPage(Model model) {
+    public String getLoginPage(Model model, @AuthenticationPrincipal Member member) {
         model.addAttribute("join", new JoinMemberForm());
         model.addAttribute("login", new LoginForm());
+        if(member != null) {
+            model.addAttribute("member", member.getEmail());
+        }
         return "/shop/index";
     }
 
@@ -44,11 +52,6 @@ public class MemberController {
 
         model.addAttribute("login", new LoginForm());
         return "/shop/index";
-    }
-
-    @GetMapping("/test")
-    public String get() {
-        return "/member/login";
     }
 
     @PostMapping("/member/join")
@@ -67,10 +70,44 @@ public class MemberController {
             return "redirect:/member/join";
         }
 
-        Member member = formToMember(form);
-        memberService.save(member);
+        formToMember(form);
         return "redirect:/member/login";
 
+    }
+
+    @GetMapping("/member/checkout")
+    public String getCheckOut(@AuthenticationPrincipal Member member, Model model) {
+        OrderCartDTO orderCart = memberService.findOrderCartByMember(member);
+        if(orderCart.getCarts().isEmpty()) {
+            return "redirect:/shop/list";
+        }
+        model.addAttribute("orderCart", orderCart);
+        return "/member/checkout";
+    }
+
+    @PostMapping("/member/checkout")
+    public String checkout(@AuthenticationPrincipal Member member,checkoutDTO checkoutDTO) {
+        memberService.saveOrderInfo(member, checkoutDTO);
+        return "redirect:/";
+    }
+
+    @GetMapping("/member/cart")
+    public String cartList(@AuthenticationPrincipal Member member, Model model) {
+        List<CartDTO> carts = memberService.findCartsByMemberId(member.getId());
+        model.addAttribute("carts", carts);
+        return "/member/cart";
+    }
+
+    @PostMapping("/member/cart")
+    public String cartUpdate(Long id, Integer count) {
+        memberService.updateCartCount(id, count);
+        return "redirect:/member/cart";
+    }
+
+    @GetMapping("/member/cart/remove")
+    public String cartDelete(Long id) {
+        memberService.deleteCart(id);
+        return "redirect:/member/cart";
     }
 
     private void addGlobalError(BindingResult bindingResult, String errorMessage, RedirectAttributes redirectAttributes,JoinMemberForm form) {

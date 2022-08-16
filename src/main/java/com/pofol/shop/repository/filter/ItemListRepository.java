@@ -1,11 +1,11 @@
 package com.pofol.shop.repository.filter;
 
 
-import com.pofol.shop.domain.Item;
-import com.pofol.shop.domain.ItemImage;
-import com.pofol.shop.domain.dto.*;
+import com.pofol.shop.domain.*;
 
-import com.querydsl.core.Tuple;
+import com.pofol.shop.domain.dto.item.ItemCondition;
+import com.pofol.shop.domain.dto.item.ItemDTO;
+import com.pofol.shop.domain.dto.item.ItemImageDTO;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -17,16 +17,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.pofol.shop.domain.QCategory.category;
+import static com.pofol.shop.domain.QColor.*;
+import static com.pofol.shop.domain.QGoods.goods;
 import static com.pofol.shop.domain.QItem.*;
+import static com.pofol.shop.domain.QSize.*;
 import static com.pofol.shop.domain.QSubcategory.subcategory;
 
 @Slf4j
@@ -41,87 +42,92 @@ public class ItemListRepository {
 
         OrderSpecifier<?>[] orders = getOrderSpecifiers(condition);
 
-        List<Item> items = queryFactory.select(item)
-                .from(item)
+        List<Item> items = queryFactory.select(item).from(item)
                 .innerJoin(item.subCategory, subcategory)
-                .fetchJoin()
                 .innerJoin(subcategory.category, category)
-                .fetchJoin()
                 .where(
                         categoryEq(condition.getCategory()),
                         subCategoryEq(condition.getSubcategory()),
-                        colorEq(condition.getColor()),
-                        sizeEq(condition.getSize())
+                        item.id.in(
+                                queryFactory.select(goods.item.id).from(goods)
+                                        .innerJoin(goods.color, color)
+                                        .innerJoin(goods.size, size)
+                                        .where(
+                                                colorEq(condition.getColor()),
+                                                sizeEq(condition.getSize())
+                                        )
+                        )
                 ).orderBy(
                         orders
-                ).offset(pageable.getOffset()
                 ).limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
                 .fetch();
 
-        List<ItemDTO> list = items.stream().map(i -> {
-            ItemDTO itemDTO = new ItemDTO(
-                    i.getId(),
-                    i.getName(),
-                    i.getPrice(),
-                    i.getQuantity(),
-                    i.getSize().getName(),
-                    i.getColor().getName(),
-                    i.getReviewGrade(),
-                    i.getSalesRate(),
-                    i.getSubCategory().getName(),
-                    i.getSubCategory().getCategory().getName());
-            Optional<ItemMainImageDTO> mainImage = i.getItemImagesList()
-                    .stream()
-                    .filter(ItemImage::getIsMainImg)
-                    .map(img -> new ItemMainImageDTO(img.getLocation(), img.getServerSavedName()))
-                    .findFirst();
-            itemDTO.setMainImage(mainImage.orElseThrow(() -> {throw new EntityNotFoundException();}));
-            return itemDTO;
-        }).collect(Collectors.toList());
-
-
-        JPAQuery<Long> countQuery = queryFactory.select(item.count())
-                .from(item)
+        JPAQuery<Long> countQuery = queryFactory.select(item.count()).from(item)
                 .innerJoin(item.subCategory, subcategory)
                 .innerJoin(subcategory.category, category)
                 .where(
                         categoryEq(condition.getCategory()),
                         subCategoryEq(condition.getSubcategory()),
-                        colorEq(condition.getColor()),
-                        sizeEq(condition.getSize())
+                        item.id.in(
+                                queryFactory.select(goods.item.id).from(goods)
+                                        .innerJoin(goods.color, color)
+                                        .innerJoin(goods.size, size)
+                                        .where(
+                                                colorEq(condition.getColor()),
+                                                sizeEq(condition.getSize())
+                                        )
+                        )
                 );
 
-        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchOne);
+        List<ItemDTO> list = items.stream()
+                .map(i -> {
+                    ItemDTO itemDTO = ItemDTO.builder()
+                            .id(i.getId())
+                            .name(i.getName())
+                            .price(i.getPrice())
+                            .mainImage(i.getItemImagesList()
+                                    .stream()
+                                    .filter(img -> img.getIsMainImg())
+                                    .map(img -> new ItemImageDTO(img.getLocation(), img.getServerSavedName()))
+                                    .findFirst().orElseThrow(() -> {
+                                        throw new EntityNotFoundException();
+                                    }))
+                            .build();
+                    return itemDTO;
+                }).collect(Collectors.toList());
 
+
+        return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchOne);
     }
 
     @Transactional(readOnly = true)
-    public List<ItemTop3DTO> findTop3BySalesRate() {
+    public List<ItemDTO> findTop3BySalesRate() {
 
-        List<Item> list = queryFactory.selectFrom(item)
-                .orderBy(item.salesRate.desc())
-                .limit(3L).fetch();
+        List<Item> items = queryFactory.select(item).from(item)
+                .orderBy(item.salesRate.asc())
+                .limit(3)
+                .fetch();
 
-        List<ItemTop3DTO> top3 = list.stream().map(i -> {
-                    ItemTop3DTO itemTop3DTO =
-                            new ItemTop3DTO(
-                                    i.getId(),
-                                    i.getName(),
-                                    i.getPrice(),
-                                    i.getSize().getName(),
-                                    i.getColor().getName());
-                    Optional<ItemMainImageDTO> imageDTO = i.getItemImagesList()
-                            .stream()
-                            .filter(ItemImage::getIsMainImg)
-                            .map(img -> new ItemMainImageDTO(img.getLocation(), img.getServerSavedName()))
-                            .findFirst();
-                    itemTop3DTO.setMainImage(imageDTO.orElseThrow(() -> {
-                        throw new EntityNotFoundException();
-                    }));
-                    return itemTop3DTO;
+        List<ItemDTO> top3 = items.stream()
+                .map(i -> {
+                    ItemDTO itemDTO = ItemDTO.builder()
+                            .id(i.getId())
+                            .name(i.getName())
+                            .price(i.getPrice())
+                            .mainImage(i.getItemImagesList()
+                                    .stream()
+                                    .filter(img -> img.getIsMainImg())
+                                    .map(img -> new ItemImageDTO(img.getLocation(), img.getServerSavedName()))
+                                    .findFirst().orElseThrow(() -> {
+                                        throw new EntityNotFoundException();
+                                    }))
+                            .build();
+                    return itemDTO;
                 }).collect(Collectors.toList());
 
         return top3;
+
     }
 
 
@@ -134,10 +140,6 @@ public class ItemListRepository {
 
         if(condition.getHighestSalesRate() != null) {
             orderList.add(highestSalesRate(true));
-        }
-
-        if(condition.getHighestReviewGrade() != null) {
-            orderList.add(highestReviewGrade(true));
         }
 
         if(condition.getLowestPrice() != null) {
@@ -170,15 +172,14 @@ public class ItemListRepository {
 
     private BooleanExpression colorEq(Long color) {
         if(color != null) {
-            log.info("color = {}", color);
-            return item.color.id.eq(color);
+            return goods.color.id.eq(color);
         }
         return null;
     }
 
     private BooleanExpression sizeEq(Long size) {
         if(size != null) {
-            return item.size.id.eq(size);
+            return goods.size.id.eq(size);
         }
         return null;
     }
@@ -204,14 +205,6 @@ public class ItemListRepository {
         }
         return null;
     }
-
-    private OrderSpecifier<Double> highestReviewGrade(Boolean isTrue) {
-        if(isTrue != null) {
-            return item.reviewGrade.desc();
-        }
-        return null;
-    }
-
 
 
 

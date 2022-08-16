@@ -1,4 +1,4 @@
-package com.pofol.shop.domain.dto;
+package com.pofol.shop.domain.dto.item;
 
 import com.pofol.shop.domain.Color;
 import com.pofol.shop.domain.Size;

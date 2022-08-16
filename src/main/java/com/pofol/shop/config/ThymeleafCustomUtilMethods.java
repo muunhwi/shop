@@ -21,9 +21,6 @@ public class ThymeleafCustomUtilMethods {
             if(name.equals("highestSalesRate")) {
                 updatedUri = uri.replaceQueryParam("highestSalesRate");
 
-            } else if(name.equals("highestReviewGrade")) {
-                updatedUri = uri.replaceQueryParam("highestReviewGrade");
-
             } else if(name.equals("lowestPrice")) {
                 updatedUri= uri.replaceQueryParam("lowestPrice");
 

@@ -41,67 +41,91 @@
       <section>
         <!-- PRODUCT OVERVIEW -->
         <div class="overview border mt-5 p-3 d-md-flex justify-content-around">
-          <img src="/img/조절된이미지.jpg" height="450px" />
+          <img
+            th:src="|${overview.mainImage.location}/${overview.mainImage.serverSavedName}|"
+            height="450px"
+          />
           <div
             class="product-contents mt-3 align-self-center"
             style="width: 430px"
           >
-            <h4>PRODUCT NAME</h4>
-            <span> 20,000₩ </span>
+            <h4 th:text="${overview.name}">PRODUCT NAME</h4>
+            <span th:text="|${{overview.price}}₩|"> 20,000₩ </span>
             <div class="vr mx-2"></div>
-            <span class="star"> ★★★★★ </span>
             <p>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
               tenetur dolor pariatur amet dignissimos autem nam placeat sequi,
               voluptate libero recusandae.
             </p>
+
+            <div>
+              <th:block th:each="size, index : ${overview.size}">
+                <input
+                  type="radio"
+                  name="size"
+                  th:id="|size_${index.index}|"
+                  th:value="${size.name}"
+                  onchange="radioSizeChange(this)"
+                />
+                <label th:for="|size_${index.index}|" th:text="${size.name}"
+                  >S</label
+                >
+              </th:block>
+            </div>
+            <div>
+              <th:block th:each="color, index : ${overview.color}">
+                <input
+                  type="radio"
+                  name="color"
+                  th:id="|color_${index.index}|"
+                  th:value="${color.name}"
+                  onchange="radioColorChange(this)"
+                />
+                <label th:for="|color_${index.index}|" th:text="${color.name}"
+                  >S</label
+                >
+              </th:block>
+            </div>
             <div>
               <input
-                type="radio"
-                class="btn-check"
-                name="options"
-                id="option1"
-                autocomplete="off"
-                checked
+                type="number"
+                name="count"
+                min="0"
+                th:id="count"
+                th:value="0"
+                onchange="countChange(this)"
               />
-              <label class="btn btn-secondary" for="option1">S</label>
-
-              <input
-                type="radio"
-                class="btn-check"
-                name="options"
-                id="option2"
-                autocomplete="off"
-              />
-              <label class="btn btn-secondary" for="option2">M</label>
-
-              <input
-                type="radio"
-                class="btn-check"
-                name="options"
-                id="option3"
-                autocomplete="off"
-              />
-              <label class="btn btn-secondary" for="option3">X</label>
-              <input
-                type="radio"
-                class="btn-check"
-                name="options"
-                id="option4"
-                autocomplete="off"
-              />
-              <label class="btn btn-secondary" for="option4">XL</label>
             </div>
             <div class="col-12 mt-3">
               <button
                 type="submit"
                 class="btn btn-primary"
                 style="width: 173px"
+                onclick="purchase(this)"
               >
-                Sign in
+                구매하기
+              </button>
+            </div>
+            <div class="col-12 mt-3">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="width: 173px"
+                onclick="cartAdd(this)"
+              >
+                장바구니 추가
               </button>
             </div>
           </div>
+        </div>
+
+        <!-- Image List-->
+        <div class="border mt-1">
+          <th:block th:each="image : ${overview.images}">
+            <div class="d-md-flex justify-content-center">
+              <img th:src="|${image.location}/${image.serverSavedName}|" />
+            </div>
+          </th:block>
         </div>
 
         <!-- comment -->
@@ -121,24 +145,24 @@
                     <div class="w-100">
                       <h5>Add a comment</h5>
 
-                      <div class="form-outline">
-                        <textarea
-                          class="form-control"
-                          id="textAreaExample"
-                          rows="4"
-                        ></textarea>
-                        <label class="form-label" for="textAreaExample"
-                          >What is your view?</label
-                        >
-                      </div>
-                      <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-success">
-                          Danger
-                        </button>
-                        <button type="button" class="btn btn-danger">
-                          Send <i class="fas fa-long-arrow-alt-right ms-1"></i>
-                        </button>
-                      </div>
+                      <form
+                        th:action="@{/shop/item/comments/{itemId}(itemId=${overview.id})}"
+                        th:method="POST"
+                      >
+                        <div class="form-outline">
+                          <textarea
+                            class="form-control"
+                            id="contents"
+                            name="contents"
+                            rows="4"
+                          ></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between mt-3">
+                          <button type="submit" class="btn btn-danger">
+                            Send
+                          </button>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -155,217 +179,345 @@
                 <div class="card-body p-4">
                   <h4 class="text-center mb-4 pb-2">Nested comments section</h4>
 
-                  <div class="row">
-                    <div class="col">
-                      <div class="d-flex flex-start">
-                        <img
-                          class="rounded-circle shadow-1-strong me-3"
-                          src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(10).webp"
-                          alt="avatar"
-                          width="65"
-                          height="65"
-                        />
-                        <div class="flex-grow-1 flex-shrink-1">
-                          <div>
-                            <div
-                              class="d-flex justify-content-between align-items-center"
-                            >
-                              <p class="mb-1">
-                                Maria Smantha
-                                <span class="small">- 2 hours ago</span>
-                              </p>
-                              <a href="#!"
-                                ><i class="fas fa-reply fa-xs"></i
-                                ><span class="small"> reply</span></a
-                              >
-                            </div>
-                            <p class="small mb-0">
-                              It is a long established fact that a reader will
-                              be distracted by the readable content of a page.
-                            </p>
-                          </div>
-
-                          <div class="d-flex flex-start mt-4">
-                            <a class="me-3" href="#">
-                              <img
-                                class="rounded-circle shadow-1-strong"
-                                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(11).webp"
-                                alt="avatar"
-                                width="65"
-                                height="65"
-                              />
-                            </a>
+                  <th:block th:each="comment : ${comments}">
+                    <div th:if="${comment.deleted}">
+                      <div class="row mt-2">
+                        <div class="col">
+                          <div class="d-flex flex-start">
+                            <img
+                              class="rounded-circle shadow-1-strong me-3"
+                              src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(10).webp"
+                              alt="avatar"
+                              width="65"
+                              height="65"
+                            />
                             <div class="flex-grow-1 flex-shrink-1">
                               <div>
                                 <div
                                   class="d-flex justify-content-between align-items-center"
                                 >
-                                  <p class="mb-1">
-                                    Simona Disa
-                                    <span class="small">- 3 hours ago</span>
-                                  </p>
+                                  <p class="mb-1">비공개</p>
                                 </div>
-                                <p class="small mb-0">
-                                  letters, as opposed to using 'Content here,
-                                  content here', making it look like readable
-                                  English.
-                                </p>
+                                <p class="small mb-0">삭제된 댓글</p>
                               </div>
-                            </div>
-                          </div>
+                              <th:block th:each="reply : ${comment.replies}">
+                                <div th:if="${reply.deleted}">
+                                  <div class="d-flex flex-start mt-4">
+                                    <a class="me-3" href="#">
+                                      <img
+                                        class="rounded-circle shadow-1-strong"
+                                        src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(11).webp"
+                                        alt="avatar"
+                                        width="65"
+                                        height="65"
+                                      />
+                                    </a>
+                                    <div class="flex-grow-1 flex-shrink-1">
+                                      <div>
+                                        <div
+                                          class="d-flex justify-content-between align-items-center"
+                                        >
+                                          <p class="mb-1">비공개</p>
+                                        </div>
+                                        <p class="small mb-0">삭제된 댓글</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
 
-                          <div class="d-flex flex-start mt-4">
-                            <a class="me-3" href="#">
-                              <img
-                                class="rounded-circle shadow-1-strong"
-                                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(32).webp"
-                                alt="avatar"
-                                width="65"
-                                height="65"
-                              />
-                            </a>
-                            <div class="flex-grow-1 flex-shrink-1">
-                              <div>
                                 <div
-                                  class="d-flex justify-content-between align-items-center"
+                                  th:unless="${reply.deleted}"
+                                  class="d-flex flex-start mt-4"
                                 >
-                                  <p class="mb-1">
-                                    John Smith
-                                    <span class="small">- 4 hours ago</span>
-                                  </p>
-                                </div>
-                                <p class="small mb-0">
-                                  the majority have suffered alteration in some
-                                  form, by injected humour, or randomised words.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                                  <a class="me-3" href="#">
+                                    <img
+                                      class="rounded-circle shadow-1-strong"
+                                      src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(11).webp"
+                                      alt="avatar"
+                                      width="65"
+                                      height="65"
+                                    />
+                                  </a>
+                                  <div class="flex-grow-1 flex-shrink-1">
+                                    <div>
+                                      <div
+                                        class="d-flex justify-content-between align-items-center"
+                                      >
+                                        <p
+                                          class="mb-1"
+                                          th:text="|${reply.nickName}      (${reply.hoursAgo})|"
+                                        >
+                                          Simona Disa
+                                        </p>
+                                        <div>
+                                          <button
+                                            onclick="updateReplyClick(this)"
+                                          >
+                                            수정하기
+                                          </button>
+                                          <button
+                                            onclick="deletedReplyClick(this)"
+                                            th:value="${reply.id}"
+                                          >
+                                            삭제하기
+                                          </button>
+                                        </div>
+                                      </div>
+                                      <p
+                                        class="small mb-0"
+                                        th:text="${reply.contents}"
+                                      >
+                                        letters, as opposed to using 'Content
+                                        here, content here', making it look like
+                                        readable English.
+                                      </p>
+                                    </div>
 
-                      <div class="d-flex flex-start mt-4">
-                        <img
-                          class="rounded-circle shadow-1-strong me-3"
-                          src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(12).webp"
-                          alt="avatar"
-                          width="65"
-                          height="65"
-                        />
-                        <div class="flex-grow-1 flex-shrink-1">
-                          <div>
-                            <div
-                              class="d-flex justify-content-between align-items-center"
-                            >
-                              <p class="mb-1">
-                                Natalie Smith
-                                <span class="small">- 2 hours ago</span>
-                              </p>
-                              <a href="#!"
-                                ><i class="fas fa-reply fa-xs"></i
-                                ><span class="small"> reply</span></a
-                              >
-                            </div>
-                            <p class="small mb-0">
-                              The standard chunk of Lorem Ipsum used since the
-                              1500s is reproduced below for those interested.
-                              Sections 1.10.32 and 1.10.33.
-                            </p>
-                          </div>
-
-                          <div class="d-flex flex-start mt-4">
-                            <a class="me-3" href="#">
-                              <img
-                                class="rounded-circle shadow-1-strong"
-                                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(31).webp"
-                                alt="avatar"
-                                width="65"
-                                height="65"
-                              />
-                            </a>
-                            <div class="flex-grow-1 flex-shrink-1">
-                              <div>
-                                <div
-                                  class="d-flex justify-content-between align-items-center"
-                                >
-                                  <p class="mb-1">
-                                    Lisa Cudrow
-                                    <span class="small">- 4 hours ago</span>
-                                  </p>
+                                    <div
+                                      th:id="|reply_update_${comment.id}|"
+                                      style="display: none"
+                                    >
+                                      <form
+                                        th:action="@{/shop/item/reply/update/{replyId}/{itemId}(replyId=${reply.id},itemId=${overview.id})}"
+                                        th:method="POST"
+                                      >
+                                        <div class="form-outline">
+                                          <textarea
+                                            class="form-control"
+                                            id="contents"
+                                            name="contents"
+                                            rows="4"
+                                          ></textarea>
+                                        </div>
+                                        <div
+                                          class="d-flex justify-content-between mt-3"
+                                        >
+                                          <button
+                                            type="submit"
+                                            class="btn btn-danger"
+                                          >
+                                            Send
+                                          </button>
+                                        </div>
+                                      </form>
+                                    </div>
+                                  </div>
                                 </div>
-                                <p class="small mb-0">
-                                  Cras sit amet nibh libero, in gravida nulla.
-                                  Nulla vel metus scelerisque ante sollicitudin
-                                  commodo. Cras purus odio, vestibulum in
-                                  vulputate at, tempus viverra turpis.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="d-flex flex-start mt-4">
-                            <a class="me-3" href="#">
-                              <img
-                                class="rounded-circle shadow-1-strong"
-                                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(29).webp"
-                                alt="avatar"
-                                width="65"
-                                height="65"
-                              />
-                            </a>
-                            <div class="flex-grow-1 flex-shrink-1">
-                              <div>
-                                <div
-                                  class="d-flex justify-content-between align-items-center"
-                                >
-                                  <p class="mb-1">
-                                    Maggie McLoan
-                                    <span class="small">- 5 hours ago</span>
-                                  </p>
-                                </div>
-                                <p class="small mb-0">
-                                  a Latin professor at Hampden-Sydney College in
-                                  Virginia, looked up one of the more obscure
-                                  Latin words, consectetur
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="d-flex flex-start mt-4">
-                            <a class="me-3" href="#">
-                              <img
-                                class="rounded-circle shadow-1-strong"
-                                src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(32).webp"
-                                alt="avatar"
-                                width="65"
-                                height="65"
-                              />
-                            </a>
-                            <div class="flex-grow-1 flex-shrink-1">
-                              <div>
-                                <div
-                                  class="d-flex justify-content-between align-items-center"
-                                >
-                                  <p class="mb-1">
-                                    John Smith
-                                    <span class="small">- 6 hours ago</span>
-                                  </p>
-                                </div>
-                                <p class="small mb-0">
-                                  Autem, totam debitis suscipit saepe sapiente
-                                  magnam officiis quaerat necessitatibus odio
-                                  assumenda, perferendis quae iusto labore
-                                  laboriosam minima numquam impedit quam
-                                  dolorem!
-                                </p>
-                              </div>
+                              </th:block>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                    <div th:unless="${comment.deleted}" class="row mt-2">
+                      <div class="col">
+                        <div class="d-flex flex-start">
+                          <img
+                            class="rounded-circle shadow-1-strong me-3"
+                            src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(10).webp"
+                            alt="avatar"
+                            width="65"
+                            height="65"
+                          />
+                          <div class="flex-grow-1 flex-shrink-1">
+                            <div>
+                              <div
+                                class="d-flex justify-content-between align-items-center"
+                              >
+                                <p
+                                  class="mb-1"
+                                  th:text="|${comment.nickName}         (${comment.hoursAgo})|"
+                                >
+                                  Maria Smantha
+                                </p>
+                                <div>
+                                  <button onclick="replyClick(this)">
+                                    reply
+                                  </button>
+                                  <button onclick="updateClick(this)">
+                                    수정하기
+                                  </button>
+                                  <button
+                                    onclick="deletedClick(this)"
+                                    th:value="${comment.id}"
+                                  >
+                                    삭제하기
+                                  </button>
+                                </div>
+                              </div>
+                              <p
+                                class="small mb-0"
+                                th:text="${comment.contents}"
+                              >
+                                It is a long established fact that a reader will
+                                be distracted by the readable content of a page.
+                              </p>
+                              <div
+                                th:id="|reply_${comment.id}|"
+                                style="display: none"
+                              >
+                                <form
+                                  th:action="@{/shop/item/reply/{commentId}/{itemId}(commentId=${comment.id},itemId=${overview.id})}"
+                                  th:method="POST"
+                                >
+                                  <div class="form-outline">
+                                    <textarea
+                                      class="form-control"
+                                      id="contents"
+                                      name="contents"
+                                      rows="4"
+                                    ></textarea>
+                                  </div>
+                                  <div
+                                    class="d-flex justify-content-between mt-3"
+                                  >
+                                    <button
+                                      type="submit"
+                                      class="btn btn-danger"
+                                    >
+                                      Send
+                                    </button>
+                                  </div>
+                                </form>
+                              </div>
+                              <div
+                                th:id="|update_${comment.id}|"
+                                style="display: none"
+                              >
+                                <form
+                                  th:action="@{/shop/item/update/{commentId}/{itemId}(commentId=${comment.id},itemId=${overview.id})}"
+                                  th:method="POST"
+                                >
+                                  <div class="form-outline">
+                                    <textarea
+                                      class="form-control"
+                                      id="contents"
+                                      name="contents"
+                                      rows="4"
+                                    ></textarea>
+                                  </div>
+                                  <div
+                                    class="d-flex justify-content-between mt-3"
+                                  >
+                                    <button
+                                      type="submit"
+                                      class="btn btn-danger"
+                                    >
+                                      Send
+                                    </button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                            <th:block th:each="reply : ${comment.replies}">
+                              <div th:if="${reply.deleted}">
+                                <div class="d-flex flex-start mt-4">
+                                  <a class="me-3" href="#">
+                                    <img
+                                      class="rounded-circle shadow-1-strong"
+                                      src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(11).webp"
+                                      alt="avatar"
+                                      width="65"
+                                      height="65"
+                                    />
+                                  </a>
+                                  <div class="flex-grow-1 flex-shrink-1">
+                                    <div>
+                                      <div
+                                        class="d-flex justify-content-between align-items-center"
+                                      >
+                                        <p class="mb-1">비공개</p>
+                                      </div>
+                                      <p class="small mb-0">삭제된 댓글</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div
+                                th:unless="${reply.deleted}"
+                                class="d-flex flex-start mt-4"
+                              >
+                                <a class="me-3" href="#">
+                                  <img
+                                    class="rounded-circle shadow-1-strong"
+                                    src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(11).webp"
+                                    alt="avatar"
+                                    width="65"
+                                    height="65"
+                                  />
+                                </a>
+                                <div class="flex-grow-1 flex-shrink-1">
+                                  <div>
+                                    <div
+                                      class="d-flex justify-content-between align-items-center"
+                                    >
+                                      <p
+                                        class="mb-1"
+                                        th:text="|${reply.nickName}      (${reply.hoursAgo})|"
+                                      >
+                                        Simona Disa
+                                      </p>
+                                      <div>
+                                        <button
+                                          onclick="updateReplyClick(this)"
+                                        >
+                                          수정하기
+                                        </button>
+                                        <button
+                                          onclick="deletedReplyClick(this)"
+                                          th:value="${reply.id}"
+                                        >
+                                          삭제하기
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <p
+                                      class="small mb-0"
+                                      th:text="${reply.contents}"
+                                    >
+                                      letters, as opposed to using 'Content
+                                      here, content here', making it look like
+                                      readable English.
+                                    </p>
+                                  </div>
+
+                                  <div
+                                    th:id="|reply_update_${comment.id}|"
+                                    style="display: none"
+                                  >
+                                    <form
+                                      th:action="@{/shop/item/reply/update/{replyId}/{itemId}(replyId=${reply.id},itemId=${overview.id})}"
+                                      th:method="POST"
+                                    >
+                                      <div class="form-outline">
+                                        <textarea
+                                          class="form-control"
+                                          id="contents"
+                                          name="contents"
+                                          rows="4"
+                                        ></textarea>
+                                      </div>
+                                      <div
+                                        class="d-flex justify-content-between mt-3"
+                                      >
+                                        <button
+                                          type="submit"
+                                          class="btn btn-danger"
+                                        >
+                                          Send
+                                        </button>
+                                      </div>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            </th:block>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </th:block>
                 </div>
               </div>
             </div>
@@ -373,10 +525,121 @@
         </div>
       </section>
     </div>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
-      crossorigin="anonymous"
-    ></script>
+    <script th:inline="javascript">
+      var sizeValue;
+      var colorValue;
+      var itemId = [[${overview.id}]]
+      var token = $("meta[name='_csrf']").attr("content");
+      var header = $("meta[name='_csrf_header']").attr("content");
+      var countValue;
+
+      function replyClick(e) {
+        var target = e.parentNode.parentNode.parentNode.children[2];
+        if (target.style.display === "none") {
+          target.style.display = "block";
+        } else {
+          target.style.display = "none";
+        }
+      }
+      function updateClick(e) {
+        var target = e.parentNode.parentNode.parentNode.children[3];
+        if (target.style.display === "none") {
+          target.style.display = "block";
+        } else {
+          target.style.display = "none";
+        }
+      }
+      function updateReplyClick(e) {
+        var target = e.parentNode.parentNode.parentNode.parentNode.children[1];
+        if (target.style.display === "none") {
+          target.style.display = "block";
+        } else {
+          target.style.display = "none";
+        }
+      }
+      function deletedClick(e) {
+        var commentId = e.value;
+        var itemId = [[${overview.id}]]
+        $.ajax({
+          url: "/shop/item/delete/comment?id=" + commentId + "&itemId=" + itemId,
+          type: "GET",
+          success: function (res) {
+            document.location.reload();
+          },
+          error: function (request, status, error) {
+            console.log(error);
+          },
+        });
+      }
+      function deletedReplyClick(e) {
+        var replyId = e.value;
+        $.ajax({
+          url: "/shop/item/delete/reply?id=" + replyId+ "&itemId=" + itemId,
+          type: "GET",
+          success: function (res) {
+            document.location.reload();
+          },
+          error: function (request, status, error) {
+            console.log(error);
+          },
+        });
+      }
+
+      function radioSizeChange(e) {
+        sizeValue = e.value;
+      }
+
+      function radioColorChange(e) {
+        colorValue = e.value;
+      }
+
+      function countChange(e) {
+        countValue = e.value;
+      }
+
+      function cartAdd(e) {
+        var formData = new FormData();
+        formData.append("size", sizeValue);
+        formData.append("color", colorValue);
+        formData.append("itemId", itemId);
+        formData.append("count", countValue);
+
+        if(countValue ===undefined || countValue === null || countValue === '' || countValue <= 0 ) {
+          alert("개수를 입력해주세요")
+          return;
+        }
+
+        if(sizeValue === undefined || sizeValue === null || sizeValue === '') {
+          alert("사이즈를 선택해주세요")
+          return;
+        }
+
+        if(colorValue === undefined || colorValue === null || colorValue === '') {
+          alert("컬러를 선택해주세요")
+          return;
+        }
+
+        $.ajax({
+        type: "POST",
+        async: true,
+        url: "/order/cart",
+        enctype: "application/www-form-urlencoded",
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(header, token);
+        },
+        processData: false,
+        contentType: false,
+        data: formData,
+        cache: false,
+        timeout: 600000,
+        success: function (res) {
+          alert(res)
+        },
+        error: function (res, err) {
+          console.log(err);
+        },
+      });
+      }
+    </script>
   </body>
 </html>

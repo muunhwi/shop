@@ -31,19 +31,10 @@ public class Item extends BaseEntity {
 
     private int price;
 
-    private int quantity;
-
-    @OneToOne
-    @JoinColumn(name = "size_id")
-    private Size size;
-
-    @OneToOne
-    @JoinColumn(name = "color_id")
-    private Color color;
-
-    private Double reviewGrade;
-
     private int salesRate;
+
+    @OneToMany(mappedBy = "item")
+    private List<Goods> goods;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_category_id")
@@ -55,5 +46,7 @@ public class Item extends BaseEntity {
     @OneToMany(mappedBy = "item")
     private List<Coupon> coupons = new ArrayList<>();
 
-
+    public void setSalesRate(int salesRate) {
+        this.salesRate = salesRate;
+    }
 }

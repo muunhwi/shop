@@ -73,18 +73,27 @@
 
                       <th:block
                         th:if="${category != null }"
-                        th:each="subcategory : ${filter.subcategories}"
+                        th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
                       >
-                        <div
-                          th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
-                        >
+                        <div>
                           <a
-                            th:id="|subcategory_${subcategory.id}|"
                             class="list-group-item"
-                            th:href="@{${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('subcategory',subcategory.id).toUriString()}}"
-                            th:text="${subcategory.name}"
+                            th:href="@{${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('subcategory').toUriString()}}"
+                            th:text="|선택해제|"
                           ></a>
                         </div>
+                        <th:block
+                          th:each="subcategory : ${filter.subcategories}"
+                        >
+                          <div>
+                            <a
+                              th:id="|subcategory_${subcategory.id}|"
+                              class="list-group-item"
+                              th:href="@{${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('subcategory',subcategory.id).toUriString()}}"
+                              th:text="${subcategory.name}"
+                            ></a>
+                          </div>
+                        </th:block>
                       </th:block>
                     </div>
                   </div>
@@ -108,11 +117,19 @@
                     class="accordion-collapse collapse show"
                     aria-labelledby="panelsStayOpen-headingTwo"
                   >
-                    <div class="accordion-body">
+                    <div
+                      class="accordion-body"
+                      th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                    >
+                      <div>
+                        <a
+                          class="list-group-item"
+                          th:href="@{${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('color').toUriString()}}"
+                          th:text="|선택해제|"
+                        ></a>
+                      </div>
                       <th:block th:each="color : ${filter.colors}">
-                        <div
-                          th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
-                        >
+                        <div>
                           <a
                             th:id="|color_${color.id}|"
                             class="list-group-item"
@@ -143,11 +160,19 @@
                     class="accordion-collapse collapse show"
                     aria-labelledby="panelsStayOpen-headingThree"
                   >
-                    <div class="accordion-body">
+                    <div
+                      class="accordion-body"
+                      th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                    >
+                      <div>
+                        <a
+                          class="list-group-item"
+                          th:href="@{${urlBuilder.replaceQueryParam('page',0).replaceQueryParam('size').toUriString()}}"
+                          th:text="|선택해제|"
+                        ></a>
+                      </div>
                       <th:block th:each="size: ${filter.sizes}">
-                        <div
-                          th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
-                        >
+                        <div>
                           <a
                             th:id="|size_${size.id}|"
                             class="list-group-item"
@@ -178,11 +203,18 @@
                     class="accordion-collapse collapse show"
                     aria-labelledby="panelsStayOpen-headingFour"
                   >
-                    <div class="accordion-body">
-                      <th:block
-                        th:each="sort: ${filter.sorts}"
-                        th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
-                      >
+                    <div
+                      class="accordion-body"
+                      th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+                    >
+                      <div>
+                        <a
+                          class="list-group-item"
+                          th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('page',0).toUriString()}"
+                          th:text="|선택해제|"
+                        ></a>
+                      </div>
+                      <th:block th:each="sort: ${filter.sorts}">
                         <div>
                           <a
                             th:if="${#strings.equals(sort, 'highestPrice')}"
@@ -203,15 +235,6 @@
                         </div>
                         <div>
                           <a
-                            th:if="${#strings.equals(sort, 'highestReviewGrade')}"
-                            th:id="|sort_${sort}|"
-                            class="list-group-item"
-                            th:href="${@ThymeleafCustomUtilMethods.removeSortQueryStrings(urlBuilder.toUriString()).replaceQueryParam('page',0).replaceQueryParam('highestReviewGrade', true).toUriString()}"
-                            th:text="|높은 평점순|"
-                          ></a>
-                        </div>
-                        <div>
-                          <a
                             th:if="${#strings.equals(sort, 'lowestPrice')}"
                             th:id="|sort_${sort}|"
                             class="list-group-item"
@@ -226,27 +249,25 @@
               </div>
             </div>
           </div>
-          <div class="col-xl-9 p-3">
+          <div class="col-xl-9">
             <div class="p-3 border rounded bg-light">
               <h4 class="header_name">Items</h4>
               <div class="container">
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3">
                   <th:block th:each="item : ${list}">
-                    <div class="item col mt-4">
+                    <a th:href="@{/shop/item/{itemId}(itemId=${item.id})}" class="list-group-item">
+                    <div class="item col mt-3">
                       <img
                         th:src="|${item.mainImage.location}/${item.mainImage.serverSavedName}|"
                         alt=""
                       />
                       <div style="text-align: center">
                         <h6 th:text="${item.name}">gray-product</h6>
-                        <h6 th:text="${item.color}">color : gray</h6>
-                        <h6 th:text="${item.size}">size : M</h6>
                         <h6 th:text="|${{item.price}}₩|">price : $500</h6>
-                        <h6 th:text="${item.category}"></h6>
-                        <h6 th:text="${item.subcategory}"></h6>
                       </div>
                     </div>
                   </th:block>
+                  </a>
                 </div>
               </div>
             </div>
@@ -310,8 +331,6 @@
               />
               <div style="text-align: center">
                 <h5 th:text="${item.name}">gray-product</h5>
-                <h6 th:text="${item.color}">color : gray</h6>
-                <h6 th:text="${item.size}">size : M</h6>
                 <h6 th:text="|${{item.price}}₩|">price : $500</h6>
               </div>
             </div>

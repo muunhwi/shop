@@ -4,6 +4,8 @@
   th:fragment="layout(title, contents, script, style)"
 >
   <head>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title th:replace="${title}">메인 타이틀</title>
     <link
       rel="stylesheet"
@@ -48,14 +50,14 @@
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    Action
+                    카테고리
                   </button>
                   <ul class="dropdown-menu">
                     <li>
                       <a
                         class="dropdown-item"
                         href="#"
-                        th:href="@{/shop/list?category=아우터}"
+                        th:href="@{/shop/list?category=1}"
                         >아우터</a
                       >
                     </li>
@@ -63,7 +65,7 @@
                       <a
                         class="dropdown-item"
                         href="#"
-                        th:href="@{/shop/list?category=셔츠}"
+                        th:href="@{/shop/list?category=2}"
                         >셔츠</a
                       >
                     </li>
@@ -71,7 +73,7 @@
                       <a
                         class="dropdown-item"
                         href="#"
-                        th:href="@{/shop/list?category=팬츠}"
+                        th:href="@{/shop/list?category=3}"
                         >팬츠</a
                       >
                     </li>
@@ -79,7 +81,7 @@
                       <a
                         class="dropdown-item"
                         href="#"
-                        th:href="@{/shop/list?category=스포츠}"
+                        th:href="@{/shop/list?category=4}"
                         >스포츠</a
                       >
                     </li>
@@ -87,7 +89,7 @@
                       <a
                         class="dropdown-item"
                         href="#"
-                        th:href="@{/shop/list?category=신발}"
+                        th:href="@{/shop/list?category=5}"
                         >신발</a
                       >
                     </li>
@@ -95,7 +97,7 @@
                       <a
                         class="dropdown-item"
                         href="#"
-                        th:href="@{/shop/list?category=가방}"
+                        th:href="@{/shop/list?category=6}"
                         >가방</a
                       >
                     </li>
@@ -103,7 +105,7 @@
                       <a
                         class="dropdown-item"
                         href="#"
-                        th:href="@{/shop/list?category=악세서리}"
+                        th:href="@{/shop/list?category=7}"
                         >악세서리</a
                       >
                     </li>
@@ -111,23 +113,12 @@
                 </div>
               </li>
               <li class="nav-item">
-                <a
-                  class="nav-link"
-                  th:if="${auth == null}"
-                  th:href="@{/member/login}"
-                  th:text="로그인"
-                  >login</a
-                >
-                <a
-                  class="nav-link"
-                  th:if="${auth != null}"
-                  th:href="@{/logout}"
-                  th:text="로그아웃"
+                <a class="nav-link" th:href="@{/logout}" th:text="로그아웃"
                   >logout</a
                 >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link" th:href="@{/member/cart}">Cart</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link disabled">Disabled</a>
@@ -225,5 +216,6 @@
   <script src="/node_modules/jquery/dist/jquery.min.js"></script>
   <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/node_modules/parsleyjs/dist/parsley.min.js"></script>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script th:replace="${script}"></script>
 </html>
