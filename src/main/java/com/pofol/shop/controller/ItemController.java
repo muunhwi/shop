@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -40,8 +41,9 @@ public class ItemController {
         }
 
         model.addAttribute("join", new JoinMemberForm());
-        model.addAttribute("top3", itemService.findTop3BySalesRate() );
         model.addAttribute("login", new LoginForm());
+        model.addAttribute("top3", itemService.findTop3BySalesRate());
+        model.addAttribute("list", itemService.getSliceItemList());
         return "/shop/index";
     }
 
@@ -72,11 +74,12 @@ public class ItemController {
     }
 
     @GetMapping("/shop/item/{itemId}")
-    public String getItemOverview(@PathVariable("itemId") Long id, Model model) {
+    public String getItemOverview(@PathVariable("itemId") Long id, Model model, @AuthenticationPrincipal Member member) {
         ItemOverviewDTO itemOverview = itemService.getItemOverview(id);
         List<CommentDTO> comments = commentService.getComments(id);
         model.addAttribute("overview", itemOverview);
         model.addAttribute("comments", comments);
+        model.addAttribute("memberId", member.getId());
         return "shop/overview";
     }
 

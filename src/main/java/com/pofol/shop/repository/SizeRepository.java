@@ -1,6 +1,6 @@
 package com.pofol.shop.repository;
 
-import com.pofol.shop.domain.Size;
+import com.pofol.shop.domain.dto.item.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

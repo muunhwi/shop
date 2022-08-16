@@ -1,17 +1,15 @@
 package com.pofol.shop.service;
 
 import com.pofol.shop.domain.*;
-import com.pofol.shop.domain.dto.CartDTO;
-import com.pofol.shop.domain.dto.OrderCartDTO;
-import com.pofol.shop.domain.dto.checkoutDTO;
+import com.pofol.shop.domain.dto.item.Goods;
+import com.pofol.shop.domain.dto.item.Item;
+import com.pofol.shop.domain.dto.order.*;
 import com.pofol.shop.domain.dto.item.ItemImageDTO;
 import com.pofol.shop.domain.dto.member.JoinMemberForm;
 import com.pofol.shop.domain.sub.Address;
 import com.pofol.shop.domain.sub.DeliveryStatus;
 import com.pofol.shop.domain.sub.OrderStatus;
-import com.pofol.shop.repository.CartRepository;
-import com.pofol.shop.repository.MemberRepository;
-import com.pofol.shop.repository.OrderRepository;
+import com.pofol.shop.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,6 +34,7 @@ public class MemberService implements UserDetailsService {
     private final CartRepository cartRepository;
     private final BCryptPasswordEncoder encoder;
     private final OrderRepository orderRepository;
+    private final GoodsRepository goodsRepository;
 
     public Long save(Member customer) {
         Member saveCustomer = memberRepository.save(customer);
@@ -47,31 +47,7 @@ public class MemberService implements UserDetailsService {
 
     public List<CartDTO> findCartsByMemberId(Long memberId) {
         List<Cart> list = cartRepository.findCartListByMemberId(memberId);
-        return list.stream()
-                .map(c -> {
-                    CartDTO build = CartDTO.builder()
-                            .id(c.getId())
-                            .count(c.getCount())
-                            .color(c.getGoods().getColor().getName())
-                            .size(c.getGoods().getSize().getName())
-                            .name(c.getGoods().getItem().getName())
-                            .price(c.getGoods().getItem().getPrice())
-                            .mainImage(c.getGoods()
-                                    .getItem()
-                                    .getItemImagesList().stream()
-                                    .filter(img -> img.getIsMainImg())
-                                    .map(img -> {
-                                        ItemImageDTO build1 = ItemImageDTO.builder()
-                                                        .serverSavedName(img.getServerSavedName())
-                                                        .location(img.getLocation())
-                                                        .build();
-                                                return build1;
-                                            }
-                                    ).findFirst().orElseThrow()
-                            )
-                            .build();
-                    return build;
-                }).collect(Collectors.toList());
+        return getCartDTOList(list);
     }
 
     public OrderCartDTO findOrderCartByMember(Member member) {
@@ -159,6 +135,34 @@ public class MemberService implements UserDetailsService {
                 .enabled(true)
                 .build();
         memberRepository.save(member);
+    }
+
+    private List<CartDTO> getCartDTOList(List<Cart> list) {
+        return list.stream()
+                .map(c -> {
+                    CartDTO build = CartDTO.builder()
+                            .id(c.getId())
+                            .count(c.getCount())
+                            .color(c.getGoods().getColor().getName())
+                            .size(c.getGoods().getSize().getName())
+                            .name(c.getGoods().getItem().getName())
+                            .price(c.getGoods().getItem().getPrice())
+                            .mainImage(c.getGoods()
+                                    .getItem()
+                                    .getItemImagesList().stream()
+                                    .filter(img -> img.getIsMainImg())
+                                    .map(img -> {
+                                                ItemImageDTO build1 = ItemImageDTO.builder()
+                                                        .serverSavedName(img.getServerSavedName())
+                                                        .location(img.getLocation())
+                                                        .build();
+                                                return build1;
+                                            }
+                                    ).findFirst().orElseThrow()
+                            )
+                            .build();
+                    return build;
+                }).collect(Collectors.toList());
     }
 
 }

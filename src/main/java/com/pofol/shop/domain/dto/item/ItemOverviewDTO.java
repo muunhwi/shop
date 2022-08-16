@@ -1,7 +1,5 @@
 package com.pofol.shop.domain.dto.item;
 
-import com.pofol.shop.domain.dto.ColorDTO;
-import com.pofol.shop.domain.dto.SizeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,9 +1,9 @@
-package com.pofol.shop.domain;
+package com.pofol.shop.domain.dto.comment;
 
-import com.pofol.shop.domain.sub.BaseEntity;
+import com.pofol.shop.domain.Member;
+import com.pofol.shop.domain.dto.item.Item;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;

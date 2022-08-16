@@ -1,4 +1,4 @@
-package com.pofol.shop.domain.dto;
+package com.pofol.shop.domain.dto.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SizeDTO {
+public class ColorDTO {
 
     private Long id;
     private String name;
-
 }

@@ -308,5 +308,15 @@
         },
       }).open();
     }
+
+    $(function () {
+      $("#orderCart")
+        .parsley()
+        .on("form:validate", function (formInstant) {
+          const ok = formInstant.isValid({ group: "block2" });
+          $("#error2").html(ok ? "" : "주소를 선택해주세요");
+          if (!ok) return (formInstant.validationResult = false);
+        });
+    });
   </script>
 </html>

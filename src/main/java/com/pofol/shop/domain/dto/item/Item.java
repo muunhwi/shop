@@ -1,7 +1,7 @@
-package com.pofol.shop.domain;
+package com.pofol.shop.domain.dto.item;
 
+import com.pofol.shop.domain.Coupon;
 import com.pofol.shop.domain.sub.BaseEntity;
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
 import javax.persistence.*;

@@ -1,12 +1,10 @@
 package com.pofol.shop.domain;
 
+import com.pofol.shop.domain.dto.item.Item;
 import com.pofol.shop.domain.sub.BaseEntity;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter

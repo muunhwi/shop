@@ -1,4 +1,4 @@
-package com.pofol.shop.domain;
+package com.pofol.shop.domain.dto.order;
 
 import com.pofol.shop.domain.sub.Address;
 import com.pofol.shop.domain.sub.DeliveryStatus;

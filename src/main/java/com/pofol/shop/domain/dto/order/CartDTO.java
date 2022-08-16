@@ -1,4 +1,4 @@
-package com.pofol.shop.domain.dto;
+package com.pofol.shop.domain.dto.order;
 
 import com.pofol.shop.domain.dto.item.ItemImageDTO;
 import lombok.AllArgsConstructor;

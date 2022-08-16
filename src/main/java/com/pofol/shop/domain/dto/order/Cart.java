@@ -1,5 +1,7 @@
-package com.pofol.shop.domain;
+package com.pofol.shop.domain.dto.order;
 
+import com.pofol.shop.domain.Member;
+import com.pofol.shop.domain.dto.item.Goods;
 import lombok.*;
 
 import javax.persistence.*;

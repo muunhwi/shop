@@ -1,8 +1,8 @@
 package com.pofol.shop.config;
 
 import com.pofol.shop.domain.*;
+import com.pofol.shop.domain.dto.item.*;
 import com.pofol.shop.domain.sub.Address;
-import com.pofol.shop.domain.sub.DeliveryStatus;
 import com.pofol.shop.repository.*;
 import com.pofol.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;

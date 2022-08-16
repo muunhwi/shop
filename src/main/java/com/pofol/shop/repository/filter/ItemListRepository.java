@@ -1,8 +1,7 @@
 package com.pofol.shop.repository.filter;
 
 
-import com.pofol.shop.domain.*;
-
+import com.pofol.shop.domain.dto.item.Item;
 import com.pofol.shop.domain.dto.item.ItemCondition;
 import com.pofol.shop.domain.dto.item.ItemDTO;
 import com.pofol.shop.domain.dto.item.ItemImageDTO;
@@ -80,54 +79,43 @@ public class ItemListRepository {
                         )
                 );
 
-        List<ItemDTO> list = items.stream()
-                .map(i -> {
-                    ItemDTO itemDTO = ItemDTO.builder()
-                            .id(i.getId())
-                            .name(i.getName())
-                            .price(i.getPrice())
-                            .mainImage(i.getItemImagesList()
-                                    .stream()
-                                    .filter(img -> img.getIsMainImg())
-                                    .map(img -> new ItemImageDTO(img.getLocation(), img.getServerSavedName()))
-                                    .findFirst().orElseThrow(() -> {
-                                        throw new EntityNotFoundException();
-                                    }))
-                            .build();
-                    return itemDTO;
-                }).collect(Collectors.toList());
+        List<ItemDTO> list = getItemDTOList(items);
 
 
         return PageableExecutionUtils.getPage(list, pageable, countQuery::fetchOne);
     }
 
     @Transactional(readOnly = true)
-    public List<ItemDTO> findTop3BySalesRate() {
+    public List<ItemDTO> getSliceItemList() {
 
+        List<Item> items = queryFactory.select(item).from(item)
+                .innerJoin(item.subCategory, subcategory)
+                .innerJoin(subcategory.category, category)
+                .where(
+                        item.salesRate.goe(10),
+                        item.id.in(
+                                queryFactory.select(goods.item.id).from(goods)
+                                        .innerJoin(goods.color, color)
+                                        .innerJoin(goods.size, size)
+                        )
+                ).offset(1)
+                .limit(12)
+                .fetch();
+
+        return getItemDTOList(items);
+
+
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<ItemDTO> findTop3BySalesRate() {
         List<Item> items = queryFactory.select(item).from(item)
                 .orderBy(item.salesRate.asc())
                 .limit(3)
                 .fetch();
-
-        List<ItemDTO> top3 = items.stream()
-                .map(i -> {
-                    ItemDTO itemDTO = ItemDTO.builder()
-                            .id(i.getId())
-                            .name(i.getName())
-                            .price(i.getPrice())
-                            .mainImage(i.getItemImagesList()
-                                    .stream()
-                                    .filter(img -> img.getIsMainImg())
-                                    .map(img -> new ItemImageDTO(img.getLocation(), img.getServerSavedName()))
-                                    .findFirst().orElseThrow(() -> {
-                                        throw new EntityNotFoundException();
-                                    }))
-                            .build();
-                    return itemDTO;
-                }).collect(Collectors.toList());
-
+        List<ItemDTO> top3 = getItemDTOList(items);
         return top3;
-
     }
 
 
@@ -206,6 +194,24 @@ public class ItemListRepository {
         return null;
     }
 
+    private List<ItemDTO> getItemDTOList(List<Item> items) {
+        return items.stream()
+                .map(i -> {
+                    ItemDTO itemDTO = ItemDTO.builder()
+                            .id(i.getId())
+                            .name(i.getName())
+                            .price(i.getPrice())
+                            .mainImage(i.getItemImagesList()
+                                    .stream()
+                                    .filter(img -> img.getIsMainImg())
+                                    .map(img -> new ItemImageDTO(img.getLocation(), img.getServerSavedName()))
+                                    .findFirst().orElseThrow(() -> {
+                                        throw new EntityNotFoundException();
+                                    }))
+                            .build();
+                    return itemDTO;
+                }).collect(Collectors.toList());
+    }
 
 
 }

@@ -86,26 +86,7 @@
                 >
               </th:block>
             </div>
-            <div>
-              <input
-                type="number"
-                name="count"
-                min="0"
-                th:id="count"
-                th:value="0"
-                onchange="countChange(this)"
-              />
-            </div>
-            <div class="col-12 mt-3">
-              <button
-                type="submit"
-                class="btn btn-primary"
-                style="width: 173px"
-                onclick="purchase(this)"
-              >
-                구매하기
-              </button>
-            </div>
+
             <div class="col-12 mt-3">
               <button
                 type="submit"
@@ -114,6 +95,16 @@
                 onclick="cartAdd(this)"
               >
                 장바구니 추가
+              </button>
+            </div>
+            <div class="col-12 mt-3">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="width: 173px"
+                onclick="cartNowAdd(this)"
+              >
+                바로 구매하기
               </button>
             </div>
           </div>
@@ -334,11 +325,15 @@
                                   <button onclick="replyClick(this)">
                                     reply
                                   </button>
-                                  <button onclick="updateClick(this)">
+                                  <button
+                                    onclick="updateClick(this)"
+                                    th:if="${comment.memberId == memberId}"
+                                  >
                                     수정하기
                                   </button>
                                   <button
                                     onclick="deletedClick(this)"
+                                    th:if="${comment.memberId == memberId}"
                                     th:value="${comment.id}"
                                   >
                                     삭제하기
@@ -461,11 +456,13 @@
                                       <div>
                                         <button
                                           onclick="updateReplyClick(this)"
+                                          th:if="${reply.memberId == memberId}"
                                         >
                                           수정하기
                                         </button>
                                         <button
                                           onclick="deletedReplyClick(this)"
+                                          th:if="${reply.memberId == memberId}"
                                           th:value="${reply.id}"
                                         >
                                           삭제하기
@@ -531,7 +528,6 @@
       var itemId = [[${overview.id}]]
       var token = $("meta[name='_csrf']").attr("content");
       var header = $("meta[name='_csrf_header']").attr("content");
-      var countValue;
 
       function replyClick(e) {
         var target = e.parentNode.parentNode.parentNode.children[2];
@@ -593,21 +589,11 @@
         colorValue = e.value;
       }
 
-      function countChange(e) {
-        countValue = e.value;
-      }
-
       function cartAdd(e) {
         var formData = new FormData();
         formData.append("size", sizeValue);
         formData.append("color", colorValue);
         formData.append("itemId", itemId);
-        formData.append("count", countValue);
-
-        if(countValue ===undefined || countValue === null || countValue === '' || countValue <= 0 ) {
-          alert("개수를 입력해주세요")
-          return;
-        }
 
         if(sizeValue === undefined || sizeValue === null || sizeValue === '') {
           alert("사이즈를 선택해주세요")
@@ -633,7 +619,45 @@
         cache: false,
         timeout: 600000,
         success: function (res) {
-          alert(res)
+          alert("장바구니에 등록 되었습니다.")
+        },
+        error: function (res, err) {
+          console.log(err);
+        },
+      });
+      }
+
+      function cartNowAdd(e) {
+        var formData = new FormData();
+        formData.append("size", sizeValue);
+        formData.append("color", colorValue);
+        formData.append("itemId", itemId);
+
+        if(sizeValue === undefined || sizeValue === null || sizeValue === '') {
+          alert("사이즈를 선택해주세요")
+          return;
+        }
+
+        if(colorValue === undefined || colorValue === null || colorValue === '') {
+          alert("컬러를 선택해주세요")
+          return;
+        }
+
+        $.ajax({
+        type: "POST",
+        async: true,
+        url: "/order/cart",
+        enctype: "application/www-form-urlencoded",
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(header, token);
+        },
+        processData: false,
+        contentType: false,
+        data: formData,
+        cache: false,
+        timeout: 600000,
+        success: function (res) {
+          location.href= res
         },
         error: function (res, err) {
           console.log(err);

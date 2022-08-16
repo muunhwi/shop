@@ -1,7 +1,7 @@
 package com.pofol.shop.service;
 
-import com.pofol.shop.domain.Item;
-import com.pofol.shop.domain.ItemImage;
+import com.pofol.shop.domain.dto.item.Item;
+import com.pofol.shop.domain.dto.item.ItemImage;
 import com.pofol.shop.domain.dto.item.ItemFormDTO;
 import com.pofol.shop.repository.ItemImageRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.pofol.shop.repository;
 
-import com.pofol.shop.domain.Comment;
+import com.pofol.shop.domain.dto.comment.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

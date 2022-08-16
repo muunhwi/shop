@@ -1,5 +1,6 @@
-package com.pofol.shop.domain;
+package com.pofol.shop.domain.dto.comment;
 
+import com.pofol.shop.domain.Member;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

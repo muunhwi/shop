@@ -1,17 +1,16 @@
 package com.pofol.shop.controller;
 
-import com.pofol.shop.domain.dto.CartDTO;
-import com.pofol.shop.domain.dto.OrderCartDTO;
-import com.pofol.shop.domain.dto.checkoutDTO;
+import com.pofol.shop.domain.dto.order.CartDTO;
+import com.pofol.shop.domain.dto.order.OrderCartDTO;
+import com.pofol.shop.domain.dto.order.checkoutDTO;
 import com.pofol.shop.domain.dto.member.LoginForm;
 import com.pofol.shop.domain.Member;
 import com.pofol.shop.domain.dto.member.JoinMemberForm;
-import com.pofol.shop.domain.sub.Address;
+import com.pofol.shop.service.ItemService;
 import com.pofol.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ import java.util.Optional;
 public class MemberController {
 
     private final MemberService memberService;
-    private final BCryptPasswordEncoder encoder;
+    private final ItemService itemService;
 
 
     @GetMapping("/member/login")
@@ -40,6 +40,8 @@ public class MemberController {
         if(member != null) {
             model.addAttribute("member", member.getEmail());
         }
+        model.addAttribute("top3", itemService.findTop3BySalesRate());
+        model.addAttribute("list", itemService.getSliceItemList());
         return "/shop/index";
     }
 
@@ -51,6 +53,8 @@ public class MemberController {
         }
 
         model.addAttribute("login", new LoginForm());
+        model.addAttribute("top3", itemService.findTop3BySalesRate());
+        model.addAttribute("list", itemService.getSliceItemList());
         return "/shop/index";
     }
 
@@ -70,7 +74,7 @@ public class MemberController {
             return "redirect:/member/join";
         }
 
-        formToMember(form);
+        memberService.formToMember(form);
         return "redirect:/member/login";
 
     }
@@ -78,9 +82,9 @@ public class MemberController {
     @GetMapping("/member/checkout")
     public String getCheckOut(@AuthenticationPrincipal Member member, Model model) {
         OrderCartDTO orderCart = memberService.findOrderCartByMember(member);
-        if(orderCart.getCarts().isEmpty()) {
-            return "redirect:/shop/list";
-        }
+        if(orderCart.getCarts().isEmpty())
+            throw new EntityNotFoundException();
+
         model.addAttribute("orderCart", orderCart);
         return "/member/checkout";
     }
@@ -88,12 +92,17 @@ public class MemberController {
     @PostMapping("/member/checkout")
     public String checkout(@AuthenticationPrincipal Member member,checkoutDTO checkoutDTO) {
         memberService.saveOrderInfo(member, checkoutDTO);
-        return "redirect:/";
+        return "redirect:/member/completion";
+    }
+
+    @GetMapping("/member/completion")
+    public String getCompletion(@AuthenticationPrincipal Member member, Model model) {
+        return "/member/completion";
     }
 
     @GetMapping("/member/cart")
     public String cartList(@AuthenticationPrincipal Member member, Model model) {
-        List<CartDTO> carts = memberService.findCartsByMemberId(member.getId());
+        List<CartDTO>  carts = memberService.findCartsByMemberId(member.getId());
         model.addAttribute("carts", carts);
         return "/member/cart";
     }
@@ -114,20 +123,6 @@ public class MemberController {
         bindingResult.reject("formError", errorMessage);
         redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "join", bindingResult);
         redirectAttributes.addFlashAttribute("join", form);
-    }
-
-    private Member formToMember(JoinMemberForm form) {
-        Member member = Member.builder()
-                .email(form.getEmail())
-                .phoneNumber(form.getPhoneNumber())
-                .sex(form.getSex())
-                .address(new Address(form.getZoneCode(), form.getBaseAddress(), form.getDetailAddress(), form.getExtraAddress()))
-                .password(encoder.encode(form.getPassword()))
-                .accountNonLocked(true)
-                .role("ROLE_USER")
-                .enabled(true)
-                .build();
-        return member;
     }
 
 

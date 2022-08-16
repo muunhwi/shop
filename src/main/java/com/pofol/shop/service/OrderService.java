@@ -1,7 +1,9 @@
 package com.pofol.shop.service;
 
 import com.pofol.shop.domain.*;
-import com.pofol.shop.domain.dto.OrderFormDTO;
+import com.pofol.shop.domain.dto.item.Goods;
+import com.pofol.shop.domain.dto.order.Cart;
+import com.pofol.shop.domain.dto.order.OrderFormDTO;
 import com.pofol.shop.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +27,7 @@ public class OrderService {
         Optional<Goods> findGoods = goodsRepository.findGoodsByNames(cartDTO.getItemId(), cartDTO.getColor(), cartDTO.getSize());
 
         if(findGoods.isEmpty()) {
-            return "아이템이 존재하지 않습니다.";
+            return cartDTO.getItemId() + "";
         }
         Goods goods = findGoods.get();
         Optional<Cart> findCart = cartRepository.findCartByGoodsIdAndMemberId(goods.getId(), member.getId());
@@ -35,14 +37,12 @@ public class OrderService {
         } else {
             Cart cart = Cart.builder()
                     .member(member)
-                    .count(cartDTO.getCount())
+                    .count(1)
                     .goods(goods)
                     .build();
             cartRepository.save(cart);
         }
-        return "ok";
+        return "/member/cart";
     }
-
-
 
 }

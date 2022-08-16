@@ -1,7 +1,5 @@
 package com.pofol.shop.service;
 
-import com.pofol.shop.domain.*;
-import com.pofol.shop.domain.dto.*;
 import com.pofol.shop.domain.dto.item.*;
 import com.pofol.shop.repository.*;
 import com.pofol.shop.repository.filter.ItemListRepository;
@@ -171,6 +169,8 @@ public class ItemService {
                         }))
                 .build();
     }
-
+    public List<ItemDTO> getSliceItemList() {
+        return itemListRepository.getSliceItemList();
+    }
 
 }

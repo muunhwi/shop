@@ -1,9 +1,9 @@
 package com.pofol.shop.service;
 
-import com.pofol.shop.domain.Comment;
-import com.pofol.shop.domain.Item;
+import com.pofol.shop.domain.dto.comment.Comment;
+import com.pofol.shop.domain.dto.item.Item;
 import com.pofol.shop.domain.Member;
-import com.pofol.shop.domain.ReplyComment;
+import com.pofol.shop.domain.dto.comment.ReplyComment;
 import com.pofol.shop.domain.dto.comment.CommentDTO;
 import com.pofol.shop.domain.dto.comment.ReplyDTO;
 import com.pofol.shop.repository.CommentRepository;
@@ -60,11 +60,13 @@ public class CommentService {
     public List<CommentDTO> getComments(Long id) {
 
         List<Comment> comments = commentRepository.findCommentsByItemId(id);
+
         return comments.stream()
                 .map(c -> {
                     CommentDTO build = CommentDTO
                             .builder()
                             .id(c.getId())
+                            .memberId(c.getMember().getId())
                             .contents(c.getContents())
                             .hoursAgo(
                                     getHoursAgo(c.getCreatedDate())
@@ -79,6 +81,7 @@ public class CommentService {
                                                         .contents(r.getContents())
                                                         .hoursAgo(getHoursAgo(r.getCreatedDate()))
                                                         .nickName(r.getMember().getNickname())
+                                                        .memberId(r.getMember().getId())
                                                         .deleted(r.getDeleted())
                                                         .id(r.getId())
                                                         .build();

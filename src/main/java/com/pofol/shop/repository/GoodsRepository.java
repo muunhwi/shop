@@ -1,6 +1,6 @@
 package com.pofol.shop.repository;
 
-import com.pofol.shop.domain.Goods;
+import com.pofol.shop.domain.dto.item.Goods;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +19,7 @@ public interface GoodsRepository extends JpaRepository<Goods, Long> {
     @Query("select g from Goods g " +
             "join fetch g.color c " +
             "join fetch g.size s " +
+            "join fetch g.item i " +
             "where g.item.id = :itemId " +
             "and c.name = :color " +
             "and s.name = :size")

@@ -14,6 +14,7 @@ import java.util.List;
 public class CommentDTO {
 
     private Long id;
+    private Long memberId;
     private String contents;
     private String nickName;
     private String hoursAgo;

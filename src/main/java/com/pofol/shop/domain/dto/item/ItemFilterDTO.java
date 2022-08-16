@@ -1,8 +1,5 @@
 package com.pofol.shop.domain.dto.item;
 
-import com.pofol.shop.domain.Color;
-import com.pofol.shop.domain.Size;
-import com.pofol.shop.domain.Subcategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

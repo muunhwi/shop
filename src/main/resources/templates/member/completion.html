@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="https://www.thymeleaf.org"
+  th:replace="~{/layout/base :: layout(~{::title}, ~{::section}, ~{::script}, ~{::style})}"
+>
+  <head>
+    <title>SHOP</title>
+  </head>
+  <style></style>
+  <body>
+    <!-- ORDER INFO -->
+    <section>
+      <div class="px-3">
+        <h1>주문 완료</h1>
+        <p class="lead">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, qui quaerat esse quos obcaecati velit rerum ea voluptatem sapiente. Voluptatibus, eveniet labore. Temporibus sunt nostrum illo ipsum recusandae dolorum architecto?
+        </p>
+        <p class="lead">
+          <a
+            th:href="@{/}"
+            class="btn btn-lg btn-secondary fw-bold border-white bg-primary"
+            >메인으로</a
+          >
+        </div>
+      </main>
+    </section>
+  </body>
+  <script th:inline="javascript"></script>
+</html>

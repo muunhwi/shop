@@ -1,10 +1,10 @@
 package com.pofol.shop.controller;
 
-import com.pofol.shop.domain.Color;
-import com.pofol.shop.domain.Item;
-import com.pofol.shop.domain.Size;
+import com.pofol.shop.domain.dto.item.Color;
+import com.pofol.shop.domain.dto.item.Item;
+import com.pofol.shop.domain.dto.item.Size;
 import com.pofol.shop.domain.dto.item.ItemFormDTO;
-import com.pofol.shop.domain.dto.SubcategoryDTO;
+import com.pofol.shop.domain.dto.item.SubcategoryDTO;
 import com.pofol.shop.repository.ColorRepository;
 import com.pofol.shop.repository.SubcategoryRepository;
 import com.pofol.shop.service.AdminService;

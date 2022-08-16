@@ -16,5 +16,6 @@ public class ReplyDTO {
     private String hoursAgo;
     private String contents;
     private Boolean deleted;
+    private Long memberId;
 
 }

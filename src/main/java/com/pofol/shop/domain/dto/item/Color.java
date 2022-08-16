@@ -1,4 +1,4 @@
-package com.pofol.shop.domain;
+package com.pofol.shop.domain.dto.item;
 
 import lombok.*;
 
@@ -10,21 +10,18 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @SequenceGenerator(
-        name = "SIZE_PK_GENERATOR",
-        sequenceName = "SIZE_PK_SEQ",
+        name = "COLOR_PK_GENERATOR",
+        sequenceName = "COLOR_PK_SEQ",
         initialValue = 1,
         allocationSize = 50
 )
 @EqualsAndHashCode(of="id")
-public class Size {
+public class Color {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SIZE_PK_GENERATOR")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COLOR_PK_GENERATOR")
     private Long id;
 
     private String name;
-
-    private String categoryName;
-
 
 }
